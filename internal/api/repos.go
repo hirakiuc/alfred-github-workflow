@@ -4,31 +4,33 @@ import (
 	"context"
 
 	"github.com/google/go-github/github"
+	"github.com/hirakiuc/alfred-github-workflow/internal/model"
 )
 
 // FetchReposHandler describe a handler interface
 type FetchReposHandler func(repos []*github.Repository, err error, hasNext bool) bool
 
-// FetchReposByUserWithHandler fetch the repos.
-func (client *Client) FetchReposByUserWithHandler(ctx context.Context, owner string, handler FetchReposHandler) {
+// FetchReposByOwner fetch the repos.
+func (client *Client) FetchReposByOwner(ctx context.Context, owner string) ([]model.Repo, error) {
 	opt := &github.RepositoryListOptions{
 		Visibility: "public",
 	}
 
+	items := []model.Repo{}
+
 	for {
-		repos, resp, err := client.github.Repositories.List(context.Background(), owner, opt)
+		repos, resp, err := client.github.Repositories.List(ctx, owner, opt)
 		if err != nil {
-			handler([]*github.Repository{}, err, false)
-			return
+			return items, err
+		}
+
+		for _, repo := range model.ConvertRepo(repos) {
+			items = append(items, repo)
 		}
 
 		hasNext := (resp.NextPage != 0)
-		if handler(repos, nil, hasNext) != true {
-			return
-		}
-
 		if hasNext != true {
-			return
+			return items, nil
 		}
 
 		opt.Page = resp.NextPage

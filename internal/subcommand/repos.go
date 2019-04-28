@@ -2,49 +2,66 @@ package subcommand
 
 import (
 	"context"
+	"strings"
 
 	aw "github.com/deanishe/awgo"
-	"github.com/google/go-github/github"
 	"github.com/hirakiuc/alfred-github-workflow/internal/api"
+	"github.com/hirakiuc/alfred-github-workflow/internal/cache"
+	"github.com/hirakiuc/alfred-github-workflow/internal/model"
 )
 
 // ReposCommand describe a subcommand to fetch repos
 type ReposCommand struct {
-	User  string
+	Owner string
+
+	Query string
 	Limit int
 }
 
 // NewReposCommand return a ReposCommand instance.
-func NewReposCommand(name string) ReposCommand {
+func NewReposCommand(owner string, args []string) ReposCommand {
 	return ReposCommand{
-		User:  name,
+		Owner: owner,
+		Query: strings.Join(args, " "),
 		Limit: 50,
 	}
 }
 
-// Run start this subcommand.
-func (cmd ReposCommand) Run(ctx context.Context, wf *aw.Workflow) {
-	items := []*github.Repository{}
+func (cmd ReposCommand) fetchRepos(ctx context.Context, wf *aw.Workflow) ([]model.Repo, error) {
+	store := cache.NewReposCache(wf)
+
+	repos, err := store.GetCache(cmd.Owner)
+	if err != nil {
+		return []model.Repo{}, err
+	}
+
+	if len(repos) != 0 {
+		return repos, nil
+	}
 
 	client := api.NewClient()
-	client.FetchReposByUserWithHandler(ctx, cmd.User, func(repos []*github.Repository, err error, hasNext bool) bool {
-		if err != nil {
-			return false
-		}
+	repos, err = client.FetchReposByOwner(ctx, cmd.Owner)
+	if err != nil {
+		return []model.Repo{}, err
+	}
 
-		for _, repo := range repos {
-			items = append(items, repo)
-		}
+	return store.Store(cmd.Owner, repos)
+}
 
-		if len(items) >= cmd.Limit {
-			return false
-		}
-
-		return true
-	})
+// Run start this subcommand.
+func (cmd ReposCommand) Run(ctx context.Context, wf *aw.Workflow) {
+	repos, err := cmd.fetchRepos(ctx, wf)
+	if err != nil {
+		wf.FatalError(err)
+		return
+	}
 
 	// Add items
-	for _, item := range items {
-		wf.NewItem(*item.Name)
+	for _, repo := range repos {
+		wf.NewItem(repo.Name)
+	}
+
+	if len(cmd.Query) > 0 {
+		wf.Filter(cmd.Query)
 	}
 }

@@ -42,7 +42,7 @@ func getCommand(args []string) subcommand.SubCommand {
 	switch len(components) {
 	case 1:
 		// Fetch the repos which created by the username.
-		return subcommand.NewReposCommand(slug)
+		return subcommand.NewReposCommand(slug, args[1:])
 	case 2:
 		owner := components[0]
 		repo := components[1]
