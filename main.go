@@ -52,10 +52,22 @@ func getCommand(args []string) subcommand.SubCommand {
 	}
 }
 
-func getRepoSubCommand(owner string, repo string, args []string) subcommand.SubCommand {
-	query := strings.Join(args[1:], " ")
+func parseSubCommandArgs(args []string) (string, []string) {
+	switch len(args) {
+	case 0:
+		return "", []string{}
+	case 1:
+		return args[0], []string{}
+	default:
+		return args[0], args[1:]
+	}
+}
 
-	switch args[0] {
+func getRepoSubCommand(owner string, repo string, args []string) subcommand.SubCommand {
+	cmd, options := parseSubCommandArgs(args)
+	query := strings.Join(options, " ")
+
+	switch cmd {
 	case "issues":
 		return subcommand.NewIssueCommand(owner, repo, query)
 	case "pulls":
