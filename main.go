@@ -56,6 +56,8 @@ func getRepoSubCommand(owner string, repo string, args []string) subcommand.SubC
 	switch args[0] {
 	case "issues":
 		return subcommand.NewIssueCommand(owner, repo)
+	case "pulls":
+		return subcommand.NewPullsCommand(owner, repo)
 	default:
 		// Show the subcommands
 		return subcommand.NewShowRepoSubCommand()
