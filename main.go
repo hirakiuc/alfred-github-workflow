@@ -1,37 +1,29 @@
 package main
 
 import (
-	"fmt"
-	"os"
-
-	"github.com/hirakiuc/alfred-github-workflow/internal/api"
+	aw "github.com/deanishe/awgo"
 )
 
+// Workflow is the main API
+var wf *aw.Workflow
+
+func init() {
+	// Create a new Workflow using default settings.
+	// Critical settings are provided by Alfred via environment variables.
+	// so this *will* die in flames if not run in an Alfred-like environment.
+	wf = aw.New()
+}
+
+// Your workflow starts here
+func run() {
+	// Add a "Script Filter" result
+	wf.NewItem("First result!")
+	// Send results to Alfred
+	wf.SendFeedback()
+}
+
 func main() {
-	client := api.GetClient()
-
-	/*
-		client.FetchReposByUserWithHandler("hirakiuc", func(repos []*github.Repository, err error, hasNext bool) bool {
-			if err != nil {
-				fmt.Printf("Error occurred: %v", err)
-				return false
-			}
-
-			for _, repo := range repos {
-				fmt.Printf("%s\n", repo.GetFullName())
-			}
-
-			return hasNext
-		})
-	*/
-
-	pulls, err := client.FetchPullRequests("hirakiuc", "tinybucket")
-	if err != nil {
-		fmt.Printf("Error occurred: %v", err)
-		os.Exit(1)
-	}
-
-	for _, pull := range pulls {
-		fmt.Printf("%s : %s\n", pull.GetURL(), pull.GetTitle())
-	}
+	// Wrap your entry point with Run() to catch and log panics and
+	// show an error in Alfred instead of silently dying
+	wf.Run(run)
 }
