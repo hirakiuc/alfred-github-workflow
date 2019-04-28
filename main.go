@@ -20,7 +20,7 @@ func init() {
 
 // Your workflow starts here
 func run() {
-	subcmd := getSubCommand(wf.Args())
+	subcmd := getCommand(wf.Args())
 	ctx := context.Background()
 
 	subcmd.Run(ctx, wf)
@@ -32,7 +32,7 @@ func run() {
 	wf.SendFeedback()
 }
 
-func getSubCommand(args []string) subcommand.SubCommand {
+func getCommand(args []string) subcommand.SubCommand {
 	if len(args) == 0 {
 		return subcommand.NewShowSubCommand()
 	}
@@ -44,13 +44,21 @@ func getSubCommand(args []string) subcommand.SubCommand {
 		// Fetch the repos which created by the username.
 		return subcommand.NewReposCommand(slug)
 	case 2:
-		// Show the subcommands
-		return subcommand.NewShowRepoSubCommand()
-	// case 3:
-	// Invoke the subcommands
-
+		owner := components[0]
+		repo := components[1]
+		return getRepoSubCommand(owner, repo, args[1:])
 	default:
 		return subcommand.NewShowSubCommand()
+	}
+}
+
+func getRepoSubCommand(owner string, repo string, args []string) subcommand.SubCommand {
+	switch args[0] {
+	case "issues":
+		return subcommand.NewIssueCommand(owner, repo)
+	default:
+		// Show the subcommands
+		return subcommand.NewShowRepoSubCommand()
 	}
 }
 

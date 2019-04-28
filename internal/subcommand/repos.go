@@ -10,14 +10,14 @@ import (
 
 // ReposCommand describe a subcommand to fetch repos
 type ReposCommand struct {
-	Name  string
+	User  string
 	Limit int
 }
 
 // NewReposCommand return a ReposCommand instance.
 func NewReposCommand(name string) ReposCommand {
 	return ReposCommand{
-		Name:  name,
+		User:  name,
 		Limit: 50,
 	}
 }
@@ -27,7 +27,7 @@ func (cmd ReposCommand) Run(ctx context.Context, wf *aw.Workflow) {
 	items := []*github.Repository{}
 
 	client := api.NewClient()
-	client.FetchReposByUserWithHandler(ctx, cmd.Name, func(repos []*github.Repository, err error, hasNext bool) bool {
+	client.FetchReposByUserWithHandler(ctx, cmd.User, func(repos []*github.Repository, err error, hasNext bool) bool {
 		if err != nil {
 			return false
 		}
