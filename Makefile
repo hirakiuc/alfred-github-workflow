@@ -2,6 +2,12 @@
 
 NAME := gh
 
+dev-deps:
+	go get -u golang.org/x/lint/golint
+
+deps:
+	go mod download
+
 build:
 	go build -o $(NAME)
 
