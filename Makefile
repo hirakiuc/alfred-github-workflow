@@ -1,7 +1,9 @@
 .DEFAULT_GOAL := default
 
+NAME := gh
+
 build:
-	go build
+	go build -o $(NAME)
 
 install:
 	go install
@@ -13,6 +15,7 @@ check:
 
 clean:
 	go clean
+	rm -f $(NAME)
 
 default:
 	make check
