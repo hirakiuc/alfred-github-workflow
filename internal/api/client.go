@@ -1,15 +1,15 @@
 package api
 
-import (
-	"github.com/google/go-github/github"
-)
+import "github.com/google/go-github/github"
 
-type GithubClient struct {
-	*github.Client
+// Client describe an instance of API client.
+type Client struct {
+	github *github.Client
 }
 
-func GetClient() *GithubClient {
-	return &GithubClient{
-		github.NewClient(nil),
+// NewClient return a instance of github client.
+func NewClient() *Client {
+	return &Client{
+		github: github.NewClient(nil),
 	}
 }

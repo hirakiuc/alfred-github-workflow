@@ -7,16 +7,18 @@ import (
 	"github.com/google/go-github/github"
 )
 
+// FetchReposHandler describe a handler interface
 type FetchReposHandler func(repos []*github.Repository, err error, hasNext bool) bool
 
-func (client *GithubClient) FetchReposByUser(user string) ([]*github.Repository, error) {
+// FetchReposByUser fetch and return the all of repos.
+func (client *Client) FetchReposByUser(ctx context.Context, user string) ([]*github.Repository, error) {
 	opt := &github.RepositoryListOptions{Visibility: "public"}
 
 	var repositories []*github.Repository
 	for {
 		fmt.Println("Fetch repositories!")
 
-		repos, resp, err := client.Repositories.List(context.Background(), user, opt)
+		repos, resp, err := client.github.Repositories.List(ctx, user, opt)
 		if err != nil {
 			return []*github.Repository{}, err
 		}
@@ -31,7 +33,8 @@ func (client *GithubClient) FetchReposByUser(user string) ([]*github.Repository,
 	return repositories, nil
 }
 
-func (client *GithubClient) FetchReposByUserWithHandler(user string, handler FetchReposHandler) {
+// FetchReposByUserWithHandler fetch and return the repos.
+func (client *Client) FetchReposByUserWithHandler(ctx context.Context, user string, handler FetchReposHandler) {
 	opt := &github.RepositoryListOptions{
 		Visibility: "public",
 	}
@@ -39,7 +42,7 @@ func (client *GithubClient) FetchReposByUserWithHandler(user string, handler Fet
 	for {
 		fmt.Println("Fetch repositories with handler!")
 
-		repos, resp, err := client.Repositories.List(context.Background(), user, opt)
+		repos, resp, err := client.github.Repositories.List(context.Background(), user, opt)
 		if err != nil {
 			handler([]*github.Repository{}, err, false)
 			return
@@ -47,6 +50,10 @@ func (client *GithubClient) FetchReposByUserWithHandler(user string, handler Fet
 
 		hasNext := (resp.NextPage != 0)
 		if handler(repos, nil, hasNext) != true {
+			return
+		}
+
+		if hasNext != true {
 			return
 		}
 

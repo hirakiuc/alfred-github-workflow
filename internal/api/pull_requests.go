@@ -2,23 +2,22 @@ package api
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/google/go-github/github"
 )
 
+// FetchPullRequestsHandler describe the handler for the FetchPullRequestsHandler method.
 type FetchPullRequestsHandler func(pulls []*github.PullRequest, err error, hasNext bool) bool
 
-func (client *GithubClient) FetchPullRequests(owner string, repo string) ([]*github.PullRequest, error) {
+// FetchPullRequests fetch the pull requests on the repository.
+func (client *Client) FetchPullRequests(ctx context.Context, owner string, repo string) ([]*github.PullRequest, error) {
 	opt := &github.PullRequestListOptions{
 		State: "open",
 	}
 
 	var pullRequests []*github.PullRequest
 	for {
-		fmt.Println("Fetch pulls!")
-
-		pulls, resp, err := client.PullRequests.List(context.Background(), owner, repo, opt)
+		pulls, resp, err := client.github.PullRequests.List(ctx, owner, repo, opt)
 		if err != nil {
 			return []*github.PullRequest{}, err
 		}
