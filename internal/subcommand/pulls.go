@@ -4,8 +4,9 @@ import (
 	"context"
 
 	aw "github.com/deanishe/awgo"
-	"github.com/google/go-github/github"
 	"github.com/hirakiuc/alfred-github-workflow/internal/api"
+	"github.com/hirakiuc/alfred-github-workflow/internal/cache"
+	"github.com/hirakiuc/alfred-github-workflow/internal/model"
 )
 
 // PullsCommand describe a subcommand to fetch pull requests
@@ -27,30 +28,38 @@ func NewPullsCommand(owner string, repo string, query string) PullsCommand {
 	}
 }
 
-// Run start this subcommand.
-func (cmd PullsCommand) Run(ctx context.Context, wf *aw.Workflow) {
-	items := []*github.PullRequest{}
+func (cmd PullsCommand) fetchPulls(ctx context.Context, wf *aw.Workflow) ([]model.PullRequest, error) {
+	store := cache.NewPullsCache(wf)
+
+	pulls, err := store.GetCache(cmd.Owner, cmd.Repo)
+	if err != nil {
+		return []model.PullRequest{}, nil
+	}
+
+	if len(pulls) != 0 {
+		return pulls, nil
+	}
 
 	client := api.NewClient()
-	client.FetchPulls(ctx, cmd.Owner, cmd.Repo, func(pulls []*github.PullRequest, err error, hasNext bool) bool {
-		if err != nil {
-			return false
-		}
+	pulls, err = client.FetchPulls(ctx, cmd.Owner, cmd.Repo)
+	if err != nil {
+		return []model.PullRequest{}, err
+	}
 
-		for _, pull := range pulls {
-			items = append(items, pull)
-		}
+	return store.Store(cmd.Owner, cmd.Repo, pulls)
+}
 
-		if len(items) >= cmd.Limit {
-			return false
-		}
-
-		return true
-	})
+// Run start this subcommand.
+func (cmd PullsCommand) Run(ctx context.Context, wf *aw.Workflow) {
+	pulls, err := cmd.fetchPulls(ctx, wf)
+	if err != nil {
+		wf.FatalError(err)
+		return
+	}
 
 	// Add items
-	for _, item := range items {
-		wf.NewItem(*item.Title)
+	for _, pull := range pulls {
+		wf.NewItem(pull.Title)
 	}
 
 	if len(cmd.Query) > 0 {
