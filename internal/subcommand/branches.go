@@ -8,37 +8,37 @@ import (
 	"github.com/hirakiuc/alfred-github-workflow/internal/api"
 )
 
-// IssueCommand describe a subcommand to fetch issues
-type IssueCommand struct {
+// BranchesCommand describe a subcommand to fetch branches.
+type BranchesCommand struct {
 	Owner string
 	Repo  string
-
 	Query string
 	Limit int
 }
 
-// NewIssueCommand return a IssueCommand instance
-func NewIssueCommand(owner string, repo string, query string) IssueCommand {
-	return IssueCommand{
+// NewBranchesCommand return an instance of BranchesCommand
+func NewBranchesCommand(owner string, repo string, query string) BranchesCommand {
+	return BranchesCommand{
 		Owner: owner,
 		Repo:  repo,
+
 		Query: query,
 		Limit: 100,
 	}
 }
 
 // Run start this subcommand.
-func (cmd IssueCommand) Run(ctx context.Context, wf *aw.Workflow) {
-	items := []*github.Issue{}
+func (cmd BranchesCommand) Run(ctx context.Context, wf *aw.Workflow) {
+	items := []*github.Branch{}
 
 	client := api.NewClient()
-	client.FetchIssues(ctx, cmd.Owner, cmd.Repo, func(issues []*github.Issue, err error, hasNext bool) bool {
+	client.FetchBranches(ctx, cmd.Owner, cmd.Repo, func(branches []*github.Branch, err error, hasNext bool) bool {
 		if err != nil {
 			return false
 		}
 
-		for _, issue := range issues {
-			items = append(items, issue)
+		for _, branch := range branches {
+			items = append(items, branch)
 		}
 
 		if len(items) >= cmd.Limit {
@@ -50,7 +50,7 @@ func (cmd IssueCommand) Run(ctx context.Context, wf *aw.Workflow) {
 
 	// Add items
 	for _, item := range items {
-		wf.NewItem(*item.Title)
+		wf.NewItem(*item.Name)
 	}
 
 	if len(cmd.Query) > 0 {
@@ -58,5 +58,5 @@ func (cmd IssueCommand) Run(ctx context.Context, wf *aw.Workflow) {
 	}
 
 	// Show a warning in Alfred if there are no items
-	wf.WarnEmpty("No issues found.", "")
+	wf.WarnEmpty("No branches found.", "")
 }

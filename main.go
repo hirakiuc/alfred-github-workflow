@@ -53,11 +53,15 @@ func getCommand(args []string) subcommand.SubCommand {
 }
 
 func getRepoSubCommand(owner string, repo string, args []string) subcommand.SubCommand {
+	query := strings.Join(args[1:], " ")
+
 	switch args[0] {
 	case "issues":
-		return subcommand.NewIssueCommand(owner, repo)
+		return subcommand.NewIssueCommand(owner, repo, query)
 	case "pulls":
-		return subcommand.NewPullsCommand(owner, repo)
+		return subcommand.NewPullsCommand(owner, repo, query)
+	case "branches":
+		return subcommand.NewBranchesCommand(owner, repo, query)
 	default:
 		// Show the subcommands
 		return subcommand.NewShowRepoSubCommand()

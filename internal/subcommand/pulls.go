@@ -12,14 +12,18 @@ import (
 type PullsCommand struct {
 	Owner string
 	Repo  string
+
+	Query string
 	Limit int
 }
 
 // NewPullsCommand return an instance of PullsCommand
-func NewPullsCommand(owner string, repo string) PullsCommand {
+func NewPullsCommand(owner string, repo string, query string) PullsCommand {
 	return PullsCommand{
 		Owner: owner,
 		Repo:  repo,
+		Query: query,
+		Limit: 100,
 	}
 }
 
@@ -48,4 +52,11 @@ func (cmd PullsCommand) Run(ctx context.Context, wf *aw.Workflow) {
 	for _, item := range items {
 		wf.NewItem(*item.Title)
 	}
+
+	if len(cmd.Query) > 0 {
+		wf.Filter(cmd.Query)
+	}
+
+	// Show a warning in Alfred if there are no items
+	wf.WarnEmpty("No pull requests found.", "")
 }
