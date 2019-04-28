@@ -7,9 +7,6 @@ import (
 	"github.com/hirakiuc/alfred-github-workflow/internal/model"
 )
 
-// FetchReposHandler describe a handler interface
-type FetchReposHandler func(repos []*github.Repository, err error, hasNext bool) bool
-
 // FetchReposByOwner fetch the repos.
 func (client *Client) FetchReposByOwner(ctx context.Context, owner string) ([]model.Repo, error) {
 	opt := &github.RepositoryListOptions{
@@ -24,7 +21,7 @@ func (client *Client) FetchReposByOwner(ctx context.Context, owner string) ([]mo
 			return items, err
 		}
 
-		for _, repo := range model.ConvertRepo(repos) {
+		for _, repo := range model.ConvertRepos(repos) {
 			items = append(items, repo)
 		}
 

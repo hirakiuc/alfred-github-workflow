@@ -10,8 +10,8 @@ type Repo struct {
 	HTMLURL     string `json:"html_url"`
 }
 
-// ConvertRepo convert the github.Repository to Repo.
-func ConvertRepo(repos []*github.Repository) []Repo {
+// ConvertRepos convert the github.Repository to Repo.
+func ConvertRepos(repos []*github.Repository) []Repo {
 	items := []Repo{}
 	for _, item := range repos {
 		items = append(items, Repo{
@@ -19,6 +19,28 @@ func ConvertRepo(repos []*github.Repository) []Repo {
 			Name:        item.GetName(),
 			Description: item.GetDescription(),
 			HTMLURL:     item.GetHTMLURL(),
+		})
+	}
+	return items
+}
+
+// Issue describe the github issue.
+type Issue struct {
+	Number int
+	Title  string
+	State  string
+	URL    string
+}
+
+// ConvertIssues convert github.Issue to Issue
+func ConvertIssues(issues []*github.Issue) []Issue {
+	items := []Issue{}
+	for _, issue := range issues {
+		items = append(items, Issue{
+			Number: issue.GetNumber(),
+			Title:  issue.GetTitle(),
+			State:  issue.GetState(),
+			URL:    issue.GetHTMLURL(),
 		})
 	}
 	return items

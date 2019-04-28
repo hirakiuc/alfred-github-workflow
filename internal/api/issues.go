@@ -4,33 +4,32 @@ import (
 	"context"
 
 	"github.com/google/go-github/github"
+	"github.com/hirakiuc/alfred-github-workflow/internal/model"
 )
 
-// FetchIssuesHandler describe a handler interface
-type FetchIssuesHandler func(issues []*github.Issue, err error, hasNext bool) bool
-
 // FetchIssues fetch the issues in the repository.
-func (client *Client) FetchIssues(ctx context.Context, owner string, repo string, handler FetchIssuesHandler) {
+func (client *Client) FetchIssues(ctx context.Context, owner string, repo string) ([]model.Issue, error) {
 	opt := github.IssueListByRepoOptions{
 		State:     "open",
 		Sort:      "created",
 		Direction: "desc",
 	}
 
+	items := []model.Issue{}
+
 	for {
 		issues, resp, err := client.github.Issues.ListByRepo(ctx, owner, repo, &opt)
 		if err != nil {
-			handler([]*github.Issue{}, err, false)
-			return
+			return items, err
+		}
+
+		for _, issue := range model.ConvertIssues(issues) {
+			items = append(items, issue)
 		}
 
 		hasNext := (resp.NextPage != 0)
-		if handler(issues, nil, hasNext) != true {
-			return
-		}
-
 		if hasNext != true {
-			return
+			return items, nil
 		}
 
 		opt.Page = resp.NextPage

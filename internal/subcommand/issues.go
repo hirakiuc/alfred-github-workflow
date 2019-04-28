@@ -4,8 +4,9 @@ import (
 	"context"
 
 	aw "github.com/deanishe/awgo"
-	"github.com/google/go-github/github"
 	"github.com/hirakiuc/alfred-github-workflow/internal/api"
+	"github.com/hirakiuc/alfred-github-workflow/internal/cache"
+	"github.com/hirakiuc/alfred-github-workflow/internal/model"
 )
 
 // IssueCommand describe a subcommand to fetch issues
@@ -27,30 +28,38 @@ func NewIssueCommand(owner string, repo string, query string) IssueCommand {
 	}
 }
 
-// Run start this subcommand.
-func (cmd IssueCommand) Run(ctx context.Context, wf *aw.Workflow) {
-	items := []*github.Issue{}
+func (cmd IssueCommand) fetchIssues(ctx context.Context, wf *aw.Workflow) ([]model.Issue, error) {
+	store := cache.NewIssuesCache(wf)
+
+	issues, err := store.GetCache(cmd.Owner, cmd.Repo)
+	if err != nil {
+		return []model.Issue{}, err
+	}
+
+	if len(issues) != 0 {
+		return issues, nil
+	}
 
 	client := api.NewClient()
-	client.FetchIssues(ctx, cmd.Owner, cmd.Repo, func(issues []*github.Issue, err error, hasNext bool) bool {
-		if err != nil {
-			return false
-		}
+	issues, err = client.FetchIssues(ctx, cmd.Owner, cmd.Repo)
+	if err != nil {
+		return []model.Issue{}, err
+	}
 
-		for _, issue := range issues {
-			items = append(items, issue)
-		}
+	return store.Store(cmd.Owner, cmd.Repo, issues)
+}
 
-		if len(items) >= cmd.Limit {
-			return false
-		}
-
-		return true
-	})
+// Run start this subcommand.
+func (cmd IssueCommand) Run(ctx context.Context, wf *aw.Workflow) {
+	issues, err := cmd.fetchIssues(ctx, wf)
+	if err != nil {
+		wf.FatalError(err)
+		return
+	}
 
 	// Add items
-	for _, item := range items {
-		wf.NewItem(*item.Title)
+	for _, issue := range issues {
+		wf.NewItem(issue.Title)
 	}
 
 	if len(cmd.Query) > 0 {

@@ -64,4 +64,7 @@ func (cmd ReposCommand) Run(ctx context.Context, wf *aw.Workflow) {
 	if len(cmd.Query) > 0 {
 		wf.Filter(cmd.Query)
 	}
+
+	// Show a warning in Alfred if there are no repos
+	wf.WarnEmpty("No repos found.", "")
 }

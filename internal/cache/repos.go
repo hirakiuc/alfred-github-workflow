@@ -12,7 +12,7 @@ type ReposCache struct {
 	wf *aw.Workflow
 }
 
-// NewReposCache return an instance of repository cache.
+// NewReposCache return an instance of repository cache store.
 func NewReposCache(wf *aw.Workflow) *ReposCache {
 	return &ReposCache{
 		wf: wf,
@@ -30,11 +30,8 @@ func (cache *ReposCache) GetCache(owner string) ([]model.Repo, error) {
 	store := cache.wf.Cache
 
 	repos := []model.Repo{}
-	if store.Exists(cacheKey) {
-		if err := store.LoadJSON(cacheKey, &repos); err != nil {
-			cache.wf.FatalError(err)
-			return []model.Repo{}, err
-		}
+	if !store.Exists(cacheKey) {
+		return []model.Repo{}, nil
 	}
 
 	if store.Expired(cacheKey, maxCacheAge) {
