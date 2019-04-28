@@ -1,3 +1,5 @@
+[![CircleCI](https://circleci.com/gh/hirakiuc/alfred-github-workflow/tree/master.svg?style=svg&circle-token=fa58af4989cde7043d7b8ea72e53359355d7da9c)](https://circleci.com/gh/hirakiuc/alfred-github-workflow/tree/master)
+
 # alfred-github-workflow
 
 Alfred workflow to view the github resources.
