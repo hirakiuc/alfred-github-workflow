@@ -43,8 +43,9 @@ func getSubCommand(args []string) subcommand.SubCommand {
 	case 1:
 		// Fetch the repos which created by the username.
 		return subcommand.NewReposCommand(slug)
-	// case 2:
-	// Show the subcommands
+	case 2:
+		// Show the subcommands
+		return subcommand.NewShowRepoSubCommand()
 	// case 3:
 	// Invoke the subcommands
 
