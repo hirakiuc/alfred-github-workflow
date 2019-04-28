@@ -4,8 +4,9 @@ import (
 	"context"
 
 	aw "github.com/deanishe/awgo"
-	"github.com/google/go-github/github"
 	"github.com/hirakiuc/alfred-github-workflow/internal/api"
+	"github.com/hirakiuc/alfred-github-workflow/internal/cache"
+	"github.com/hirakiuc/alfred-github-workflow/internal/model"
 )
 
 // BranchesCommand describe a subcommand to fetch branches.
@@ -27,30 +28,38 @@ func NewBranchesCommand(owner string, repo string, query string) BranchesCommand
 	}
 }
 
-// Run start this subcommand.
-func (cmd BranchesCommand) Run(ctx context.Context, wf *aw.Workflow) {
-	items := []*github.Branch{}
+func (cmd BranchesCommand) fetchBranches(ctx context.Context, wf *aw.Workflow) ([]model.Branch, error) {
+	store := cache.NewBranchesCache(wf)
+
+	branches, err := store.GetCache(cmd.Owner, cmd.Repo)
+	if err != nil {
+		return []model.Branch{}, err
+	}
+
+	if len(branches) != 0 {
+		return branches, nil
+	}
 
 	client := api.NewClient()
-	client.FetchBranches(ctx, cmd.Owner, cmd.Repo, func(branches []*github.Branch, err error, hasNext bool) bool {
-		if err != nil {
-			return false
-		}
+	branches, err = client.FetchBranches(ctx, cmd.Owner, cmd.Repo)
+	if err != nil {
+		return []model.Branch{}, err
+	}
 
-		for _, branch := range branches {
-			items = append(items, branch)
-		}
+	return store.Store(cmd.Owner, cmd.Repo, branches)
+}
 
-		if len(items) >= cmd.Limit {
-			return false
-		}
-
-		return true
-	})
+// Run start this subcommand.
+func (cmd BranchesCommand) Run(ctx context.Context, wf *aw.Workflow) {
+	branches, err := cmd.fetchBranches(ctx, wf)
+	if err != nil {
+		wf.FatalError(err)
+		return
+	}
 
 	// Add items
-	for _, item := range items {
-		wf.NewItem(*item.Name)
+	for _, branch := range branches {
+		wf.NewItem(branch.Name)
 	}
 
 	if len(cmd.Query) > 0 {
