@@ -1,0 +1,60 @@
+version: 2.1
+
+executors:
+  go-executor:
+    docker:
+      - image: circleci/golang:1.12
+        environment:
+          GO111MODULE: "on"
+    working_directory: /go/src/github.com/hirakiuc/alfred-github-workflow
+
+jobs:
+  checkout-code:
+    executor: go-executor
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - mod-{{ .Environment.COMMON_CACHE_KEY }}-{{ checksum "go.mod" }}
+      - run:
+          name: Install dependencies
+          command: make deps
+      - save_cache:
+          key: mod-{{ .Environment.COMMON_CACHE_KEY }}-{{ checksum "go.mod" }}
+          paths:
+            - /go/pkg/mod/cache
+      - persist_to_workspace:
+          root: /go/src/github.com/hirakiuc
+          paths:
+            - alfred-github-workflow
+  check:
+    executor: go-executor
+    steps:
+      - attach_workspace:
+          at: /go/src/github.com/hirakiuc
+      - run:
+          command: make dev-deps
+      - run:
+          command: make check
+  build:
+    executor: go-executor
+    steps:
+      - attach_workspace:
+          at: /go/src/github.com/hirakiuc
+      - restore_cache:
+          key: mod-{{ .Environment.COMMON_CACHE_KEY }}-{{ checksum "go.mod" }}
+      - run:
+          command: make build
+
+workflows:
+  version: 2
+  check_and_build:
+    jobs:
+      - checkout-code
+      - check:
+          requires:
+            - checkout-code
+      - build:
+          requires:
+            - checkout-code
+
