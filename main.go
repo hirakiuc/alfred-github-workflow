@@ -76,6 +76,8 @@ func getRepoSubCommand(owner string, repo string, args []string) subcommand.SubC
 		return subcommand.NewBranchesCommand(owner, repo, query)
 	case "milestones":
 		return subcommand.NewMilestonesCommand(owner, repo, query)
+	case "projects":
+		return subcommand.NewProjectsCommand(owner, repo, query)
 	default:
 		// Show the subcommands
 		return subcommand.NewShowRepoSubCommand()

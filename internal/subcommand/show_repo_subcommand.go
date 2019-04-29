@@ -22,6 +22,7 @@ func (cmd ShowRepoSubCommand) Run(_ctx context.Context, wf *aw.Workflow) {
 		"issues",
 		"milestones",
 		"pulls",
+		"projects",
 	}
 
 	for _, name := range subcommands {
