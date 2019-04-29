@@ -18,8 +18,9 @@ func NewShowRepoSubCommand() ShowRepoSubCommand {
 // Run start this subcommand
 func (cmd ShowRepoSubCommand) Run(_ctx context.Context, wf *aw.Workflow) {
 	subcommands := []string{
-		"issues",
 		"branches",
+		"issues",
+		"milestones",
 		"pulls",
 	}
 

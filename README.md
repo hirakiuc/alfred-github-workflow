@@ -20,7 +20,7 @@ Alfred workflow to view the github resources.
 | x | gh user/repo issues {query} | Show issues |
 | x | gh user/repo branches {query} | Show branches |
 | x | gh user/repo pulls {query} | Show pulls |
-| - | gh user/repo milestones {query} | Show milestones |
+| x | gh user/repo milestones {query} | Show milestones |
 | - | gh user/repo projects {query} | Show projects |
 | - | gh user/repo releases {query} | Show releases |
 
