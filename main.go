@@ -41,6 +41,10 @@ func getCommand(args []string) subcommand.SubCommand {
 	components := strings.Split(slug, "/")
 	switch len(components) {
 	case 1:
+		if slug == ">" {
+			return subcommand.NewShowConfigSubCommand()
+		}
+
 		// Fetch the repos which created by the username.
 		return subcommand.NewReposCommand(slug, args[1:])
 	case 2:
