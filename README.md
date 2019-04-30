@@ -38,6 +38,12 @@ Alfred workflow to view the github resources.
 | - | gh user/repo pulse | Show the pulse page |
 | - | gh user/repo wiki | Show the wiki page |
 
+## Configs
+
+| status | command | description |
+|:-------|:--------|:------------|
+| x | gh > token | Configure the github api token |
+
 # License
 
 See LICENSE file.

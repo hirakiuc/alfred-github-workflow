@@ -58,14 +58,37 @@ func getCommand(args []string) subcommand.SubCommand {
 	}
 }
 
+func parseConfigCommandArgs(args []string) (string, []string) {
+	switch len(args) {
+	case 0:
+		return "help", []string{}
+	case 1:
+		return args[0], []string{}
+	default:
+		return args[0], args[1:]
+	}
+}
+
 func getConfigSubCommand(args []string) subcommand.SubCommand {
-	return configcmd.NewHelpCommand()
+	cmd, opts := parseConfigCommandArgs(args)
+
+	switch cmd {
+	case "token":
+		token := ""
+		if len(opts) > 0 {
+			token = opts[0]
+		}
+
+		return configcmd.NewTokenCommand(token)
+	default:
+		return configcmd.NewHelpCommand()
+	}
 }
 
 func parseSubCommandArgs(args []string) (string, []string) {
 	switch len(args) {
 	case 0:
-		return "", []string{}
+		return "help", []string{}
 	case 1:
 		return args[0], []string{}
 	default:
