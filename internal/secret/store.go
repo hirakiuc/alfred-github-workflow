@@ -71,7 +71,7 @@ func newItemWithSecret(key string, secret string) (keychain.Item, error) {
 }
 
 // Store stores the secret in the secret store.
-func (store *Store) Store(key string, secret string) error {
+func (store Store) Store(key string, secret string) error {
 	query, err := queryItem(key)
 	if err != nil {
 		return err
@@ -100,7 +100,7 @@ func (store *Store) Store(key string, secret string) error {
 }
 
 // Get fetch the value from the secret store.
-func (store *Store) Get(key string) (string, error) {
+func (store Store) Get(key string) (string, error) {
 	query, err := queryItem(key)
 	if err != nil {
 		return "", err
@@ -119,7 +119,7 @@ func (store *Store) Get(key string) (string, error) {
 }
 
 // Delete removes the value from the secret store.
-func (store *Store) Delete(key string) error {
+func (store Store) Delete(key string) error {
 	item, err := newItem(key)
 	if err != nil {
 		return err
