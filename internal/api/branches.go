@@ -19,8 +19,8 @@ func (client *Client) FetchBranches(ctx context.Context, owner string, repo stri
 			return items, err
 		}
 
-		for _, branch := range model.ConvertBranches(branches) {
-			items = append(items, branch)
+		for _, branch := range branches {
+			items = append(items, model.ConvertBranch(owner, repo, branch))
 		}
 
 		hasNext := (resp.NextPage != 0)

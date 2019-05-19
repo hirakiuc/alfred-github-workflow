@@ -2,6 +2,8 @@ package main
 
 import (
 	"context"
+	"fmt"
+	"os"
 	"strings"
 
 	aw "github.com/deanishe/awgo"
@@ -20,9 +22,39 @@ func init() {
 	wf = aw.New()
 }
 
+func filterArgs(args []string) []string {
+	ret := []string{}
+
+	for _, component := range args {
+		parts := strings.Split(component, " ")
+
+		for _, arg := range parts {
+			v := strings.Trim(arg, " ")
+			if v != "" {
+				ret = append(ret, v)
+			}
+		}
+	}
+
+	return ret
+}
+
+func splitSlug(slug string) []string {
+	if slug == "" {
+		return []string{}
+	}
+
+	parts := strings.Split(slug, "/")
+	if len(parts) == 1 || parts[1] == "" {
+		return []string{parts[0]}
+	}
+
+	return parts[0:2]
+}
+
 // Your workflow starts here
 func run() {
-	subcmd := getCommand(wf.Args())
+	subcmd := getCommand(filterArgs(wf.Args()))
 	ctx := context.Background()
 
 	subcmd.Run(ctx, wf)
@@ -35,12 +67,13 @@ func run() {
 }
 
 func getCommand(args []string) subcommand.SubCommand {
+	fmt.Fprintf(os.Stderr, "args:%v\n", args)
 	if len(args) == 0 {
 		return subcommand.NewHelpCommand()
 	}
 
 	slug := args[0]
-	components := strings.Split(slug, "/")
+	components := splitSlug(args[0])
 	switch len(components) {
 	case 1:
 		if slug == ">" {
@@ -90,7 +123,7 @@ func getRepoSubCommand(owner string, repo string, args []string) subcommand.SubC
 		return repocmd.NewProjectsCommand(owner, repo, query)
 	default:
 		// Show the subcommands
-		return repocmd.NewHelpCommand()
+		return repocmd.NewHelpCommand(owner, repo)
 	}
 }
 

@@ -60,6 +60,7 @@ func (cmd ReposCommand) Run(ctx context.Context, wf *aw.Workflow) {
 	for _, repo := range repos {
 		wf.NewItem(repo.Name).
 			Subtitle(repo.Description).
+			Autocomplete(cmd.Owner + "/" + repo.Name + " ").
 			Arg(repo.HTMLURL).
 			Valid(true)
 	}
