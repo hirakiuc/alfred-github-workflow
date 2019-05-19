@@ -40,7 +40,7 @@ func (cmd PullsCommand) fetchPulls(ctx context.Context, wf *aw.Workflow) ([]mode
 		return pulls, nil
 	}
 
-	client := api.NewClient()
+	client := api.NewClient(ctx)
 	pulls, err = client.FetchPulls(ctx, cmd.Owner, cmd.Repo)
 	if err != nil {
 		return []model.PullRequest{}, err

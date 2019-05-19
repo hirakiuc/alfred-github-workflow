@@ -40,7 +40,7 @@ func (cmd MilestonesCommand) fetchMilestones(ctx context.Context, wf *aw.Workflo
 		return milestones, nil
 	}
 
-	client := api.NewClient()
+	client := api.NewClient(ctx)
 	milestones, err = client.FetchMilestones(ctx, cmd.Owner, cmd.Repo)
 	if err != nil {
 		return []model.Milestone{}, err

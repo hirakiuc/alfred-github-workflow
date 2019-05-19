@@ -39,7 +39,7 @@ func (cmd ReposCommand) fetchRepos(ctx context.Context, wf *aw.Workflow) ([]mode
 		return repos, nil
 	}
 
-	client := api.NewClient()
+	client := api.NewClient(ctx)
 	repos, err = client.FetchReposByOwner(ctx, cmd.Owner)
 	if err != nil {
 		return []model.Repo{}, err
@@ -58,7 +58,10 @@ func (cmd ReposCommand) Run(ctx context.Context, wf *aw.Workflow) {
 
 	// Add items
 	for _, repo := range repos {
-		wf.NewItem(repo.Name)
+		wf.NewItem(repo.Name).
+			Subtitle(repo.Description).
+			Arg(repo.HTMLURL).
+			Valid(true)
 	}
 
 	if len(cmd.Query) > 0 {
