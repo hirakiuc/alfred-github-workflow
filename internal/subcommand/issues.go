@@ -40,7 +40,7 @@ func (cmd IssueCommand) fetchIssues(ctx context.Context, wf *aw.Workflow) ([]mod
 		return issues, nil
 	}
 
-	client := api.NewClient()
+	client := api.NewClient(ctx)
 	issues, err = client.FetchIssues(ctx, cmd.Owner, cmd.Repo)
 	if err != nil {
 		return []model.Issue{}, err

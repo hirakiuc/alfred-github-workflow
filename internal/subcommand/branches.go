@@ -40,7 +40,7 @@ func (cmd BranchesCommand) fetchBranches(ctx context.Context, wf *aw.Workflow) (
 		return branches, nil
 	}
 
-	client := api.NewClient()
+	client := api.NewClient(ctx)
 	branches, err = client.FetchBranches(ctx, cmd.Owner, cmd.Repo)
 	if err != nil {
 		return []model.Branch{}, err
