@@ -1,4 +1,4 @@
-package subcommand
+package repo
 
 import (
 	"context"

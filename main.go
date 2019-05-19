@@ -6,6 +6,8 @@ import (
 
 	aw "github.com/deanishe/awgo"
 	"github.com/hirakiuc/alfred-github-workflow/internal/subcommand"
+	configcmd "github.com/hirakiuc/alfred-github-workflow/internal/subcommand/config"
+	repocmd "github.com/hirakiuc/alfred-github-workflow/internal/subcommand/repo"
 )
 
 // Workflow is the main API
@@ -34,13 +36,17 @@ func run() {
 
 func getCommand(args []string) subcommand.SubCommand {
 	if len(args) == 0 {
-		return subcommand.NewShowSubCommand()
+		return subcommand.NewHelpCommand()
 	}
 
 	slug := args[0]
 	components := strings.Split(slug, "/")
 	switch len(components) {
 	case 1:
+		if slug == ">" {
+			return getConfigSubCommand(args[1:])
+		}
+
 		// Fetch the repos which created by the username.
 		return subcommand.NewReposCommand(slug, args[1:])
 	case 2:
@@ -48,8 +54,12 @@ func getCommand(args []string) subcommand.SubCommand {
 		repo := components[1]
 		return getRepoSubCommand(owner, repo, args[1:])
 	default:
-		return subcommand.NewShowSubCommand()
+		return subcommand.NewHelpCommand()
 	}
+}
+
+func getConfigSubCommand(args []string) subcommand.SubCommand {
+	return configcmd.NewHelpCommand()
 }
 
 func parseSubCommandArgs(args []string) (string, []string) {
@@ -69,18 +79,18 @@ func getRepoSubCommand(owner string, repo string, args []string) subcommand.SubC
 
 	switch cmd {
 	case "issues":
-		return subcommand.NewIssueCommand(owner, repo, query)
+		return repocmd.NewIssueCommand(owner, repo, query)
 	case "pulls":
-		return subcommand.NewPullsCommand(owner, repo, query)
+		return repocmd.NewPullsCommand(owner, repo, query)
 	case "branches":
-		return subcommand.NewBranchesCommand(owner, repo, query)
+		return repocmd.NewBranchesCommand(owner, repo, query)
 	case "milestones":
-		return subcommand.NewMilestonesCommand(owner, repo, query)
+		return repocmd.NewMilestonesCommand(owner, repo, query)
 	case "projects":
-		return subcommand.NewProjectsCommand(owner, repo, query)
+		return repocmd.NewProjectsCommand(owner, repo, query)
 	default:
 		// Show the subcommands
-		return subcommand.NewShowRepoSubCommand()
+		return repocmd.NewHelpCommand()
 	}
 }
 
