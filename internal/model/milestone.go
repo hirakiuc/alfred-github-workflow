@@ -2,7 +2,6 @@ package model
 
 import (
 	"fmt"
-	"os"
 	"time"
 
 	"github.com/google/go-github/github"
@@ -36,7 +35,6 @@ func (m Milestone) GetItemTitle() string {
 // GetProgress return the progress of the milestone
 func (m Milestone) GetProgress() float64 {
 	total := m.OpenIssues + m.ClosedIssues
-	fmt.Fprintf(os.Stderr, "%d", total)
 	if total == 0 {
 		return float64(0)
 	}
