@@ -59,7 +59,10 @@ func (cmd MilestonesCommand) Run(ctx context.Context, wf *aw.Workflow) {
 
 	// Add items
 	for _, milestone := range milestones {
-		wf.NewItem(milestone.Title)
+		wf.NewItem(milestone.GetItemTitle()).
+			Subtitle(milestone.GetItemSubtitle()).
+			Arg(milestone.HTMLURL).
+			Valid(true)
 	}
 
 	if len(cmd.Query) > 0 {

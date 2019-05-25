@@ -59,7 +59,10 @@ func (cmd PullsCommand) Run(ctx context.Context, wf *aw.Workflow) {
 
 	// Add items
 	for _, pull := range pulls {
-		wf.NewItem(pull.Title)
+		wf.NewItem(pull.GetItemTitle()).
+			Subtitle(pull.GetItemSubtitle()).
+			Arg(pull.HTMLURL).
+			Valid(true)
 	}
 
 	if len(cmd.Query) > 0 {
