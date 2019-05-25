@@ -40,7 +40,7 @@ func (cmd BranchesCommand) fetchBranches(ctx context.Context, wf *aw.Workflow) (
 		return branches, nil
 	}
 
-	client := api.NewClient()
+	client := api.NewClient(ctx)
 	branches, err = client.FetchBranches(ctx, cmd.Owner, cmd.Repo)
 	if err != nil {
 		return []model.Branch{}, err
@@ -59,7 +59,9 @@ func (cmd BranchesCommand) Run(ctx context.Context, wf *aw.Workflow) {
 
 	// Add items
 	for _, branch := range branches {
-		wf.NewItem(branch.Name)
+		wf.NewItem(branch.Name).
+			Arg(branch.HTMLURL).
+			Valid(true)
 	}
 
 	if len(cmd.Query) > 0 {

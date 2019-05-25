@@ -40,7 +40,7 @@ func (cmd IssueCommand) fetchIssues(ctx context.Context, wf *aw.Workflow) ([]mod
 		return issues, nil
 	}
 
-	client := api.NewClient()
+	client := api.NewClient(ctx)
 	issues, err = client.FetchIssues(ctx, cmd.Owner, cmd.Repo)
 	if err != nil {
 		return []model.Issue{}, err
@@ -59,7 +59,10 @@ func (cmd IssueCommand) Run(ctx context.Context, wf *aw.Workflow) {
 
 	// Add items
 	for _, issue := range issues {
-		wf.NewItem(issue.Title)
+		wf.NewItem(issue.GetItemTitle()).
+			Subtitle(issue.GetItemSubtitle()).
+			Arg(issue.HTMLURL).
+			Valid(true)
 	}
 
 	if len(cmd.Query) > 0 {
