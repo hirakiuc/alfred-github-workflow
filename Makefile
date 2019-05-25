@@ -1,4 +1,6 @@
 .DEFAULT_GOAL := default
+ALFRED_WORKFLOW_DIR := ${HOME}/Library/Application\ Support/Alfred\ 3/Alfred.alfredpreferences/workflows
+DIR_NAME := `basename ${PWD}`
 
 NAME := gh
 
@@ -26,5 +28,11 @@ clean:
 default:
 	make check
 	make build
+
+link:
+	ln -sv $(pwd) ${ALFRED_WORKFLOW_DIR}/
+
+unlink:
+	rm -i ${ALFRED_WORKFLOW_DIR}/${DIR_NAME}
 
 .PHONY: build install check clean
