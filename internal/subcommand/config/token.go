@@ -22,7 +22,7 @@ func NewTokenCommand(token string) TokenCommand {
 
 // Run start this subcommand.
 func (cmd TokenCommand) Run(ctx context.Context, wf *aw.Workflow) {
-	store := secret.NewStore()
+	store := secret.NewStore(wf)
 
 	if len(cmd.Token) == 0 {
 		token, err := store.Get(secret.KeyGithubAPIToken)
