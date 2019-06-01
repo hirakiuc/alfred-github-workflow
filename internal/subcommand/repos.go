@@ -39,7 +39,11 @@ func (cmd ReposCommand) fetchRepos(ctx context.Context, wf *aw.Workflow) ([]mode
 		return repos, nil
 	}
 
-	client := api.NewClient(ctx)
+	client, err := api.NewClient(ctx, wf)
+	if err != nil {
+		return []model.Repo{}, err
+	}
+
 	repos, err = client.FetchReposByOwner(ctx, cmd.Owner)
 	if err != nil {
 		return []model.Repo{}, err
