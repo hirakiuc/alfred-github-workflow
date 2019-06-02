@@ -10,13 +10,38 @@ import (
 // FetchReposByOwner fetch the repos.
 func (client *Client) FetchReposByOwner(ctx context.Context, owner string) ([]model.Repo, error) {
 	opt := &github.RepositoryListOptions{
-		Visibility: "public",
+		Visibility: "all",
 	}
 
 	items := []model.Repo{}
 
 	for {
 		repos, resp, err := client.github.Repositories.List(ctx, owner, opt)
+		if err != nil {
+			return items, err
+		}
+
+		for _, repo := range model.ConvertRepos(repos) {
+			items = append(items, repo)
+		}
+
+		hasNext := (resp.NextPage != 0)
+		if hasNext != true {
+			return items, nil
+		}
+
+		opt.Page = resp.NextPage
+	}
+}
+
+// FetchReposByOrgs fetch the repository in the organization.
+func (client *Client) FetchReposByOrgs(ctx context.Context, org string) ([]model.Repo, error) {
+	opt := &github.RepositoryListByOrgOptions{Type: "all"}
+
+	items := []model.Repo{}
+
+	for {
+		repos, resp, err := client.github.Repositories.ListByOrg(ctx, org, opt)
 		if err != nil {
 			return items, err
 		}

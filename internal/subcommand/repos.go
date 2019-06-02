@@ -49,6 +49,15 @@ func (cmd ReposCommand) fetchRepos(ctx context.Context, wf *aw.Workflow) ([]mode
 		return []model.Repo{}, err
 	}
 
+	if len(repos) > 1 {
+		return store.Store(cmd.Owner, repos)
+	}
+
+	repos, err = client.FetchReposByOrgs(ctx, cmd.Owner)
+	if err != nil {
+		return []model.Repo{}, err
+	}
+
 	return store.Store(cmd.Owner, repos)
 }
 
