@@ -20,6 +20,7 @@ func (cmd HelpCommand) Run(_ctx context.Context, wf *aw.Workflow) {
 	subcommands := []string{
 		"user",
 		"user/repo",
+		">",
 	}
 
 	for _, name := range subcommands {

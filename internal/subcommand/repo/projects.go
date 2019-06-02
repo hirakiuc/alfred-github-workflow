@@ -40,7 +40,11 @@ func (cmd ProjectsCommand) fetchProjects(ctx context.Context, wf *aw.Workflow) (
 		return projects, nil
 	}
 
-	client := api.NewClient(ctx)
+	client, err := api.NewClient(ctx, wf)
+	if err != nil {
+		return []model.Project{}, err
+	}
+
 	projects, err = client.FetchProjects(ctx, cmd.Owner, cmd.Repo)
 	if err != nil {
 		return []model.Project{}, err
