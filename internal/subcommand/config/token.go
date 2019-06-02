@@ -25,7 +25,7 @@ func (cmd TokenCommand) Run(ctx context.Context, wf *aw.Workflow) {
 	store := secret.NewStore(wf)
 
 	if len(cmd.Token) == 0 {
-		token, err := store.Get(secret.KeyGithubAPIToken)
+		token, err := store.GetAPIToken()
 		if err != nil {
 			wf.FatalError(err)
 			return
