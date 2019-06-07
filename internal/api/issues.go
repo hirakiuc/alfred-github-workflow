@@ -23,12 +23,9 @@ func (client *Client) FetchIssues(ctx context.Context, owner string, repo string
 			return items, err
 		}
 
-		for _, issue := range model.ConvertIssues(issues) {
-			items = append(items, issue)
-		}
+		items = append(items, model.ConvertIssues(issues)...)
 
-		hasNext := (resp.NextPage != 0)
-		if hasNext != true {
+		if resp.NextPage == 0 {
 			return items, nil
 		}
 

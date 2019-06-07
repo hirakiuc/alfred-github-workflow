@@ -19,12 +19,9 @@ func (client *Client) FetchProjects(ctx context.Context, owner string, repo stri
 			return items, err
 		}
 
-		for _, project := range model.ConvertProjects(projects) {
-			items = append(items, project)
-		}
+		items = append(items, model.ConvertProjects(projects)...)
 
-		hasNext := (resp.NextPage != 0)
-		if hasNext != true {
+		if resp.NextPage == 0 {
 			return items, nil
 		}
 

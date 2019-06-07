@@ -74,7 +74,7 @@ func findReposContains(repos []model.Repo, key string) []model.Repo {
 
 	ret := []model.Repo{}
 	for _, repo := range repos {
-		if strings.Contains(strings.ToUpper(repo.Name), keyword) == true {
+		if strings.Contains(strings.ToUpper(repo.Name), keyword) {
 			ret = append(ret, repo)
 		}
 	}

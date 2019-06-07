@@ -9,6 +9,7 @@ import (
 )
 
 const (
+	/* #nosec */
 	// KeyGithubAPIToken describe a key string
 	KeyGithubAPIToken = "github-api-token"
 )

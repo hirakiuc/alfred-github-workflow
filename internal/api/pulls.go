@@ -23,12 +23,9 @@ func (client *Client) FetchPulls(ctx context.Context, owner string, repo string)
 			return items, err
 		}
 
-		for _, pull := range model.ConvertPullRequests(pulls) {
-			items = append(items, pull)
-		}
+		items = append(items, model.ConvertPullRequests(pulls)...)
 
-		hasNext := (resp.NextPage != 0)
-		if hasNext != true {
+		if resp.NextPage == 0 {
 			return items, nil
 		}
 

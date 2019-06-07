@@ -19,12 +19,9 @@ func (client *Client) FetchMilestones(ctx context.Context, owner string, repo st
 			return items, err
 		}
 
-		for _, milestone := range model.ConvertMilestones(milestones) {
-			items = append(items, milestone)
-		}
+		items = append(items, model.ConvertMilestones(milestones)...)
 
-		hasNext := (resp.NextPage != 0)
-		if hasNext != true {
+		if resp.NextPage == 0 {
 			return items, nil
 		}
 
