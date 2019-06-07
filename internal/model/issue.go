@@ -7,6 +7,13 @@ import (
 	"github.com/google/go-github/github"
 )
 
+const (
+	// IssueStateOpen describe the opened status
+	IssueStateOpen = "open"
+	// IssueStatusClosed describe the closed status
+	IssueStatusClosed = "closed"
+)
+
 // Issue describe the github issue.
 type Issue struct {
 	Number    int
@@ -24,15 +31,15 @@ func formatTime(t time.Time) string {
 
 // GetItemTitle return the title text for alfred item.
 func (i Issue) GetItemTitle() string {
-	return fmt.Sprintf("%s", i.Title)
+	return i.Title
 }
 
 // GetItemSubtitle return the subtitle text for alfred item.
 func (i Issue) GetItemSubtitle() string {
 	switch i.State {
-	case "open":
+	case IssueStateOpen:
 		return fmt.Sprintf("#%d opened on %s by %s", i.Number, formatTime(i.CreatedAt), i.Reporter)
-	case "closed":
+	case IssueStatusClosed:
 		return fmt.Sprintf("#%d by %s was closed on %s", i.Number, i.Reporter, formatTime(i.ClosedAt))
 	default:
 		return fmt.Sprintf("#%d opened on %s by %s. state:%s", i.Number, formatTime(i.CreatedAt), i.Reporter, i.State)

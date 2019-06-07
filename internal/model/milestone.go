@@ -20,7 +20,7 @@ type Milestone struct {
 }
 
 func (m Milestone) formatDueDate() string {
-	if m.DueOn.IsZero() == true {
+	if m.DueOn.IsZero() {
 		return "No due date"
 	}
 
@@ -46,7 +46,8 @@ func (m Milestone) GetProgress() float64 {
 func (m Milestone) GetItemSubtitle() string {
 	switch m.State {
 	case "open":
-		return fmt.Sprintf("%s, progress:%.0f (open: %d, closed: %d)", m.formatDueDate(), m.GetProgress(), m.OpenIssues, m.ClosedIssues)
+		return fmt.Sprintf("%s, progress:%.0f (open: %d, closed: %d)",
+			m.formatDueDate(), m.GetProgress(), m.OpenIssues, m.ClosedIssues)
 	case "closed":
 		return fmt.Sprintf("Closed on %s (open: %d, closed: %d)", formatTime(m.ClosedAt), m.OpenIssues, m.ClosedIssues)
 	default:

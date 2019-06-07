@@ -21,12 +21,9 @@ func (client *Client) FetchReposByOwner(ctx context.Context, owner string) ([]mo
 			return items, err
 		}
 
-		for _, repo := range model.ConvertRepos(repos) {
-			items = append(items, repo)
-		}
+		items = append(items, model.ConvertRepos(repos)...)
 
-		hasNext := (resp.NextPage != 0)
-		if hasNext != true {
+		if resp.NextPage == 0 {
 			return items, nil
 		}
 
@@ -46,12 +43,9 @@ func (client *Client) FetchReposByOrgs(ctx context.Context, org string) ([]model
 			return items, err
 		}
 
-		for _, repo := range model.ConvertRepos(repos) {
-			items = append(items, repo)
-		}
+		items = append(items, model.ConvertRepos(repos)...)
 
-		hasNext := (resp.NextPage != 0)
-		if hasNext != true {
+		if resp.NextPage == 0 {
 			return items, nil
 		}
 

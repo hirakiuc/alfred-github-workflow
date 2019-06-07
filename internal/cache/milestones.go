@@ -34,7 +34,7 @@ func (cache *MilestonesCache) GetCache(owner string, repo string) ([]model.Miles
 		return []model.Milestone{}, nil
 	}
 
-	if store.Expired(cacheKey, maxCacheAge) {
+	if store.Expired(cacheKey, getMaxCacheAge()) {
 		return []model.Milestone{}, nil
 	}
 

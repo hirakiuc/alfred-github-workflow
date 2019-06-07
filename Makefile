@@ -17,9 +17,7 @@ install:
 	go install
 
 check:
-	go vet ./internal/...
-	golint ./internal/...
-	golint main.go
+	golangci-lint run --enable-all -D dupl ./...
 
 clean:
 	go clean

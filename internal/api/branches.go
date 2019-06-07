@@ -23,8 +23,7 @@ func (client *Client) FetchBranches(ctx context.Context, owner string, repo stri
 			items = append(items, model.ConvertBranch(owner, repo, branch))
 		}
 
-		hasNext := (resp.NextPage != 0)
-		if hasNext != true {
+		if resp.NextPage == 0 {
 			return items, nil
 		}
 

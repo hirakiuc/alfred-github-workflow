@@ -34,7 +34,7 @@ func (cache *IssuesCache) GetCache(owner string, repo string) ([]model.Issue, er
 		return []model.Issue{}, nil
 	}
 
-	if store.Expired(cacheKey, maxCacheAge) {
+	if store.Expired(cacheKey, getMaxCacheAge()) {
 		return []model.Issue{}, nil
 	}
 

@@ -33,7 +33,7 @@ func (cache *ProjectsCache) GetCache(owner string, repo string) ([]model.Project
 		return projects, nil
 	}
 
-	if store.Expired(cacheKey, maxCacheAge) {
+	if store.Expired(cacheKey, getMaxCacheAge()) {
 		return projects, nil
 	}
 

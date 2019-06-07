@@ -12,16 +12,6 @@ import (
 	repocmd "github.com/hirakiuc/alfred-github-workflow/internal/subcommand/repo"
 )
 
-// Workflow is the main API
-var wf *aw.Workflow
-
-func init() {
-	// Create a new Workflow using default settings.
-	// Critical settings are provided by Alfred via environment variables.
-	// so this *will* die in flames if not run in an Alfred-like environment.
-	wf = aw.New()
-}
-
 func filterArgs(args []string) []string {
 	ret := []string{}
 
@@ -53,17 +43,19 @@ func splitSlug(slug string) []string {
 }
 
 // Your workflow starts here
-func run() {
-	subcmd := getCommand(filterArgs(wf.Args()))
-	ctx := context.Background()
+func run(wf *aw.Workflow) func() {
+	return func() {
+		subcmd := getCommand(filterArgs(wf.Args()))
+		ctx := context.Background()
 
-	subcmd.Run(ctx, wf)
+		subcmd.Run(ctx, wf)
 
-	// Add a "Script Filter" result
-	// wf.NewItem("First result!")
+		// Add a "Script Filter" result
+		// wf.NewItem("First result!")
 
-	// Send results to Alfred
-	wf.SendFeedback()
+		// Send results to Alfred
+		wf.SendFeedback()
+	}
 }
 
 func getCommand(args []string) subcommand.SubCommand {
@@ -151,7 +143,12 @@ func getRepoSubCommand(owner string, repo string, args []string) subcommand.SubC
 }
 
 func main() {
+	// Create a new Workflow using default settings.
+	// Critical settings are provided by Alfred via environment variables.
+	// so this *will* die in flames if not run in an Alfred-like environment.
+	wf := aw.New()
+
 	// Wrap your entry point with Run() to catch and log panics and
 	// show an error in Alfred instead of silently dying
-	wf.Run(run)
+	wf.Run(run(wf))
 }
