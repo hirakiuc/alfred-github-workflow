@@ -33,7 +33,7 @@ jobs:
       - attach_workspace:
           at: /go/src/github.com/hirakiuc
       - run:
-          command: make dev-deps
+          command: curl -sfL https://install.goreleaser.com/github.com/golangci/golangci-lint.sh | sh -s -- -b $(go env GOPATH)/bin v1.16.0
       - run:
           command: make check
   build:
