@@ -1,8 +1,10 @@
 package cli
 
 import (
+	"context"
 	"strings"
 
+	aw "github.com/deanishe/awgo"
 	"github.com/hirakiuc/alfred-github-workflow/internal/subcommand"
 	configcmd "github.com/hirakiuc/alfred-github-workflow/internal/subcommand/config"
 	repocmd "github.com/hirakiuc/alfred-github-workflow/internal/subcommand/repo"
@@ -12,13 +14,6 @@ import (
 type Slug struct {
 	Owner string
 	Repo  string
-}
-
-// Args...
-type Args struct {
-	Args   []string
-	Slug   *Slug
-	Subcmd subcommand.SubCommand
 }
 
 const (
@@ -31,6 +26,13 @@ const (
 	cmdTypeInvalid = "invalid"
 )
 
+// Command...
+type Command struct {
+	Args   []string
+	Slug   *Slug
+	Subcmd subcommand.SubCommand
+}
+
 func parseConfigCommandArgs(args []string) (string, []string) {
 	switch len(args) {
 	case 0:
@@ -42,8 +44,10 @@ func parseConfigCommandArgs(args []string) (string, []string) {
 	}
 }
 
-func getConfigSubCommand(args []string) subcommand.SubCommand {
-	cmd, opts := parseConfigCommandArgs(args)
+func (c *Command) createConfigSubCommand() {
+	c.Slug = nil
+
+	cmd, opts := parseConfigCommandArgs(c.Args)
 
 	switch cmd {
 	case "token":
@@ -52,14 +56,21 @@ func getConfigSubCommand(args []string) subcommand.SubCommand {
 			token = opts[0]
 		}
 
-		return configcmd.NewTokenCommand(token)
+		c.Subcmd = configcmd.NewTokenCommand(token)
 	default:
-		return configcmd.NewHelpCommand()
+		c.Subcmd = configcmd.NewHelpCommand()
 	}
 }
 
-func getOwnerSubCommand(owner string, args []string) subcommand.SubCommand {
-	return subcommand.NewReposCommand(owner, args)
+func (c *Command) createOwnerSubCommand() {
+	c.Slug = &Slug{
+		Owner: c.Args[0],
+	}
+
+	// Remove first argument.
+	c.Args = c.Args[1:]
+
+	c.Subcmd = subcommand.NewReposCommand(c.Slug.Owner, c.Args)
 }
 
 func parseSubCommandArgs(args []string) (string, []string) {
@@ -73,25 +84,43 @@ func parseSubCommandArgs(args []string) (string, []string) {
 	}
 }
 
-func getRepoSubCommand(owner string, repo string, args []string) subcommand.SubCommand {
-	cmd, options := parseSubCommandArgs(args)
+func (c *Command) createRepoSubCommand() {
+	parts := strings.Split(c.Args[0], repoSeparator)
+	c.Slug = &Slug{
+		Owner: parts[0],
+		Repo:  parts[1],
+	}
+
+	// Remove first argument.
+	c.Args = c.Args[1:]
+
+	cmd, options := parseSubCommandArgs(c.Args)
 	query := strings.Join(options, " ")
 
 	switch cmd {
 	case "issues":
-		return repocmd.NewIssueCommand(owner, repo, query)
+		c.Subcmd = repocmd.NewIssueCommand(c.Slug.Owner, c.Slug.Repo, query)
 	case "pulls":
-		return repocmd.NewPullsCommand(owner, repo, query)
+		c.Subcmd = repocmd.NewPullsCommand(c.Slug.Owner, c.Slug.Repo, query)
 	case "branches":
-		return repocmd.NewBranchesCommand(owner, repo, query)
+		c.Subcmd = repocmd.NewBranchesCommand(c.Slug.Owner, c.Slug.Repo, query)
 	case "milestones":
-		return repocmd.NewMilestonesCommand(owner, repo, query)
+		c.Subcmd = repocmd.NewMilestonesCommand(c.Slug.Owner, c.Slug.Repo, query)
 	case "projects":
-		return repocmd.NewProjectsCommand(owner, repo, query)
+		c.Subcmd = repocmd.NewProjectsCommand(c.Slug.Owner, c.Slug.Repo, query)
 	default:
 		// Show the subcommands
-		return repocmd.NewHelpCommand(owner, repo)
+		c.Subcmd = repocmd.NewHelpCommand(c.Slug.Owner, c.Slug.Repo)
 	}
+}
+
+func (c *Command) createHelpCommand() {
+	c.Subcmd = subcommand.NewHelpCommand()
+}
+
+// Run...
+func (c *Command) Run(ctx context.Context, wf *aw.Workflow) {
+	c.Subcmd.Run(ctx, wf)
 }
 
 func normalizeArgs(args []string) []string {
@@ -132,26 +161,22 @@ func judgeType(word string) string {
 }
 
 // ParseArgs parses the arguments
-func ParseArgs(arguments []string) *Args {
-	args := Args{
+func ParseArgs(arguments []string) *Command {
+	cmd := &Command{
 		Args: normalizeArgs(arguments),
 	}
 
-	cmdType := judgeType(args.Args[0])
+	cmdType := judgeType(cmd.Args[0])
 	switch cmdType {
 	case cmdTypeConfig:
-		args.Slug = nil
-		args.Subcmd = getConfigSubCommand(args.Args)
+		cmd.createConfigSubCommand()
 	case cmdTypeOwner:
-		args.Slug = &Slug{Owner: args.Args[0]}
-		args.Subcmd = getOwnerSubCommand(args.Args[0], args.Args[1:])
+		cmd.createOwnerSubCommand()
 	case cmdTypeRepo:
-		slug := strings.Split(args.Args[0], repoSeparator)
-		args.Slug = &Slug{Owner: slug[0], Repo: slug[1]}
-		args.Subcmd = getRepoSubCommand(slug[0], slug[1], args.Args[1:])
+		cmd.createRepoSubCommand()
 	default:
-		args.Subcmd = subcommand.NewHelpCommand()
+		cmd.createHelpCommand()
 	}
 
-	return &args
+	return cmd
 }
