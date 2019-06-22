@@ -14,12 +14,17 @@ type Repo struct {
 func ConvertRepos(repos []*github.Repository) []Repo {
 	items := []Repo{}
 	for _, item := range repos {
-		items = append(items, Repo{
-			Owner:       item.Owner.GetName(),
-			Name:        item.GetName(),
-			Description: item.GetDescription(),
-			HTMLURL:     item.GetHTMLURL(),
-		})
+		items = append(items, ConvertRepo(item))
 	}
+
 	return items
+}
+
+func ConvertRepo(repo *github.Repository) Repo {
+	return Repo{
+		Owner:       repo.Owner.GetName(),
+		Name:        repo.GetName(),
+		Description: repo.GetDescription(),
+		HTMLURL:     repo.GetHTMLURL(),
+	}
 }

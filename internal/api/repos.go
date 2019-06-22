@@ -52,3 +52,15 @@ func (client *Client) FetchReposByOrgs(ctx context.Context, org string) ([]model
 		opt.Page = resp.NextPage
 	}
 }
+
+// FetchRepo fetch the target repository
+func (client *Client) FetchRepo(ctx context.Context, owner string, repo string) (*model.Repo, error) {
+	r, _, err := client.github.Repositories.Get(ctx, owner, repo)
+	if err != nil {
+		return nil, err
+	}
+
+	v := model.ConvertRepo(r)
+
+	return &v, nil
+}
