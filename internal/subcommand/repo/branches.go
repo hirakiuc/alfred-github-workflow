@@ -6,6 +6,7 @@ import (
 	aw "github.com/deanishe/awgo"
 	"github.com/hirakiuc/alfred-github-workflow/internal/api"
 	"github.com/hirakiuc/alfred-github-workflow/internal/cache"
+	"github.com/hirakiuc/alfred-github-workflow/internal/icon"
 	"github.com/hirakiuc/alfred-github-workflow/internal/model"
 )
 
@@ -61,11 +62,17 @@ func (cmd BranchesCommand) Run(ctx context.Context, wf *aw.Workflow) {
 		return
 	}
 
+	icon, _ := icon.GetIcon(icon.TypeBranch)
+
 	// Add items
 	for _, branch := range branches {
-		wf.NewItem(branch.Name).
+		item := wf.NewItem(branch.Name).
 			Arg(branch.HTMLURL).
 			Valid(true)
+
+		if icon != nil {
+			item.Icon(icon)
+		}
 	}
 
 	if len(cmd.Query) > 0 {

@@ -6,6 +6,7 @@ import (
 	aw "github.com/deanishe/awgo"
 	"github.com/hirakiuc/alfred-github-workflow/internal/api"
 	"github.com/hirakiuc/alfred-github-workflow/internal/cache"
+	"github.com/hirakiuc/alfred-github-workflow/internal/icon"
 	"github.com/hirakiuc/alfred-github-workflow/internal/model"
 )
 
@@ -61,12 +62,18 @@ func (cmd MilestonesCommand) Run(ctx context.Context, wf *aw.Workflow) {
 		return
 	}
 
+	icon, _ := icon.GetIcon(icon.TypeMilestone)
+
 	// Add items
 	for _, milestone := range milestones {
-		wf.NewItem(milestone.GetItemTitle()).
+		item := wf.NewItem(milestone.GetItemTitle()).
 			Subtitle(milestone.GetItemSubtitle()).
 			Arg(milestone.HTMLURL).
 			Valid(true)
+
+		if icon != nil {
+			item.Icon(icon)
+		}
 	}
 
 	if len(cmd.Query) > 0 {
