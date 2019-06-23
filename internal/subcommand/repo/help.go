@@ -44,7 +44,7 @@ func (cmd HelpCommand) htmlURL(name string) string {
 	return strings.Join(components, "/")
 }
 
-func (cmd HelpCommand) fetchRepos(ctx context.Context, wf *aw.Workflow) ([]model.Repo, error) {
+func (cmd HelpCommand) fetchRepos(_ context.Context, wf *aw.Workflow) ([]model.Repo, error) {
 	store := cache.NewReposCache(wf)
 
 	repos, err := store.GetCache(cmd.Owner)
@@ -56,17 +56,21 @@ func (cmd HelpCommand) fetchRepos(ctx context.Context, wf *aw.Workflow) ([]model
 		return repos, nil
 	}
 
+	return repos, nil
+}
+
+func (cmd HelpCommand) fetchRepo(ctx context.Context, wf *aw.Workflow) (*model.Repo, error) {
 	client, err := api.NewClient(ctx, wf)
 	if err != nil {
-		return []model.Repo{}, err
+		return nil, err
 	}
 
-	repos, err = client.FetchReposByOwner(ctx, cmd.Owner)
+	repo, err := client.FetchRepo(ctx, cmd.Owner, cmd.Repo)
 	if err != nil {
-		return []model.Repo{}, err
+		return nil, err
 	}
 
-	return store.Store(cmd.Owner, repos)
+	return repo, nil
 }
 
 func findReposContains(repos []model.Repo, key string) []model.Repo {
@@ -142,13 +146,27 @@ func (cmd HelpCommand) Run(ctx context.Context, wf *aw.Workflow) {
 				Valid(true)
 		}
 	} else {
-		// show repos if found some repos.
-		for _, repo := range founds {
-			wf.NewItem(repo.Name).
-				Subtitle(repo.Description).
-				Autocomplete(cmd.Owner + "/" + repo.Name + " ").
-				Arg(repo.HTMLURL).
-				Valid(true)
+		if len(repos) > 0 {
+			// show repos if found some repos.
+			for _, repo := range founds {
+				wf.NewItem(repo.Name).
+					Subtitle(repo.Description).
+					Autocomplete(cmd.Owner + "/" + repo.Name + " ").
+					Arg(repo.HTMLURL).
+					Valid(true)
+			}
+		} else {
+			repo, err := cmd.fetchRepo(ctx, wf)
+			if err != nil {
+				// show error
+				wf.FatalError(err)
+				return
+			}
+
+			if repo != nil {
+				// show subcommands
+				cmd.appendSubCommand(wf)
+			}
 		}
 	}
 
