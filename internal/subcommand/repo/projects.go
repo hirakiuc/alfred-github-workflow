@@ -6,6 +6,7 @@ import (
 	aw "github.com/deanishe/awgo"
 	"github.com/hirakiuc/alfred-github-workflow/internal/api"
 	"github.com/hirakiuc/alfred-github-workflow/internal/cache"
+	"github.com/hirakiuc/alfred-github-workflow/internal/icon"
 	"github.com/hirakiuc/alfred-github-workflow/internal/model"
 )
 
@@ -61,9 +62,15 @@ func (cmd ProjectsCommand) Run(ctx context.Context, wf *aw.Workflow) {
 		return
 	}
 
+	icon, _ := icon.GetIcon(icon.TypeProject)
+
 	// Add items
 	for _, project := range projects {
-		wf.NewItem(project.Name)
+		item := wf.NewItem(project.Name)
+
+		if icon != nil {
+			item.Icon(icon)
+		}
 	}
 
 	if len(cmd.Query) > 0 {

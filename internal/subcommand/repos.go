@@ -7,6 +7,7 @@ import (
 	aw "github.com/deanishe/awgo"
 	"github.com/hirakiuc/alfred-github-workflow/internal/api"
 	"github.com/hirakiuc/alfred-github-workflow/internal/cache"
+	"github.com/hirakiuc/alfred-github-workflow/internal/icon"
 	"github.com/hirakiuc/alfred-github-workflow/internal/model"
 )
 
@@ -69,13 +70,19 @@ func (cmd ReposCommand) Run(ctx context.Context, wf *aw.Workflow) {
 		return
 	}
 
+	icon, _ := icon.GetIcon(icon.TypeRepo)
+
 	// Add items
 	for _, repo := range repos {
-		wf.NewItem(repo.Name).
+		item := wf.NewItem(repo.Name).
 			Subtitle(repo.Description).
 			Autocomplete(cmd.Owner + "/" + repo.Name + " ").
 			Arg(repo.HTMLURL).
 			Valid(true)
+
+		if icon != nil {
+			item.Icon(icon)
+		}
 	}
 
 	if len(cmd.Query) > 0 {

@@ -6,6 +6,7 @@ import (
 	aw "github.com/deanishe/awgo"
 	"github.com/hirakiuc/alfred-github-workflow/internal/api"
 	"github.com/hirakiuc/alfred-github-workflow/internal/cache"
+	"github.com/hirakiuc/alfred-github-workflow/internal/icon"
 	"github.com/hirakiuc/alfred-github-workflow/internal/model"
 )
 
@@ -61,12 +62,18 @@ func (cmd IssueCommand) Run(ctx context.Context, wf *aw.Workflow) {
 		return
 	}
 
+	icon, _ := icon.GetIcon(icon.TypeIssue)
+
 	// Add items
 	for _, issue := range issues {
-		wf.NewItem(issue.GetItemTitle()).
+		item := wf.NewItem(issue.GetItemTitle()).
 			Subtitle(issue.GetItemSubtitle()).
 			Arg(issue.HTMLURL).
 			Valid(true)
+
+		if icon != nil {
+			item.Icon(icon)
+		}
 	}
 
 	if len(cmd.Query) > 0 {
