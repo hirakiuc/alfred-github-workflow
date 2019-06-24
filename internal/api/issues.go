@@ -7,6 +7,18 @@ import (
 	"github.com/hirakiuc/alfred-github-workflow/internal/model"
 )
 
+func filterIssues(issues []*github.Issue) []*github.Issue {
+	results := []*github.Issue{}
+
+	for _, issue := range issues {
+		if issue.GetPullRequestLinks() == nil {
+			results = append(results, issue)
+		}
+	}
+
+	return results
+}
+
 // FetchIssues fetch the issues in the repository.
 func (client *Client) FetchIssues(ctx context.Context, owner string, repo string) ([]model.Issue, error) {
 	opt := github.IssueListByRepoOptions{
@@ -22,6 +34,9 @@ func (client *Client) FetchIssues(ctx context.Context, owner string, repo string
 		if err != nil {
 			return items, err
 		}
+
+		// Remove PullRequests
+		issues = filterIssues(issues)
 
 		items = append(items, model.ConvertIssues(issues)...)
 
