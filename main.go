@@ -4,7 +4,7 @@ import (
 	"context"
 
 	aw "github.com/deanishe/awgo"
-	"github.com/hirakiuc/alfred-github-workflow/internal/cli"
+	"github.com/hirakiuc/alfred-github-workflow/cli"
 )
 
 // Your workflow starts here

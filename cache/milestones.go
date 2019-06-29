@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	aw "github.com/deanishe/awgo"
-	"github.com/hirakiuc/alfred-github-workflow/internal/model"
+	"github.com/hirakiuc/alfred-github-workflow/model"
 )
 
 // MilestonesCache describe an instance of milestone cache.

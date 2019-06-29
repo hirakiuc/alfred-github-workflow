@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/google/go-github/github"
-	"github.com/hirakiuc/alfred-github-workflow/internal/model"
+	"github.com/hirakiuc/alfred-github-workflow/model"
 )
 
 // FetchReposByOwner fetch the repos.
