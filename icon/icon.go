@@ -31,7 +31,7 @@ func getCurrentPath() string {
 }
 
 func GetIcon(t Type) (*aw.Icon, error) {
-	iconPath := filepath.Join(getCurrentPath(), "../../icons", t.ToString())
+	iconPath := filepath.Join(getCurrentPath(), "../../assets/icons", t.ToString())
 
 	absPath, err := filepath.Abs(iconPath)
 	if err != nil {

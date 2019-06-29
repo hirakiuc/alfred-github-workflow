@@ -7,9 +7,9 @@ import (
 	"strings"
 
 	aw "github.com/deanishe/awgo"
-	"github.com/hirakiuc/alfred-github-workflow/internal/api"
-	"github.com/hirakiuc/alfred-github-workflow/internal/cache"
-	"github.com/hirakiuc/alfred-github-workflow/internal/model"
+	"github.com/hirakiuc/alfred-github-workflow/api"
+	"github.com/hirakiuc/alfred-github-workflow/cache"
+	"github.com/hirakiuc/alfred-github-workflow/model"
 )
 
 // HelpCommand describe a subcommand to show the repo subcommand.

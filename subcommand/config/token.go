@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	aw "github.com/deanishe/awgo"
-	"github.com/hirakiuc/alfred-github-workflow/internal/secret"
+	"github.com/hirakiuc/alfred-github-workflow/secret"
 )
 
 // TokenCommand describe a subcommand to configure the api token.

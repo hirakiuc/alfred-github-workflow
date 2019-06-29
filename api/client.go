@@ -5,7 +5,7 @@ import (
 
 	aw "github.com/deanishe/awgo"
 	"github.com/google/go-github/github"
-	"github.com/hirakiuc/alfred-github-workflow/internal/secret"
+	"github.com/hirakiuc/alfred-github-workflow/secret"
 	"golang.org/x/oauth2"
 )
 
