@@ -5,9 +5,9 @@ import (
 	"strings"
 
 	aw "github.com/deanishe/awgo"
-	"github.com/hirakiuc/alfred-github-workflow/internal/subcommand"
-	configcmd "github.com/hirakiuc/alfred-github-workflow/internal/subcommand/config"
-	repocmd "github.com/hirakiuc/alfred-github-workflow/internal/subcommand/repo"
+	"github.com/hirakiuc/alfred-github-workflow/subcommand"
+	configcmd "github.com/hirakiuc/alfred-github-workflow/subcommand/config"
+	repocmd "github.com/hirakiuc/alfred-github-workflow/subcommand/repo"
 )
 
 // Slug...
