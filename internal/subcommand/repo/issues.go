@@ -2,6 +2,7 @@ package repo
 
 import (
 	"context"
+	"strings"
 
 	aw "github.com/deanishe/awgo"
 	"github.com/hirakiuc/alfred-github-workflow/internal/api"
@@ -20,11 +21,11 @@ type IssueCommand struct {
 }
 
 // NewIssueCommand return a IssueCommand instance
-func NewIssueCommand(owner string, repo string, query string) IssueCommand {
+func NewIssueCommand(owner string, repo string, args []string) IssueCommand {
 	return IssueCommand{
 		Owner: owner,
 		Repo:  repo,
-		Query: query,
+		Query: strings.Join(args, " "),
 		Limit: 100,
 	}
 }

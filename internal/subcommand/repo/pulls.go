@@ -2,6 +2,7 @@ package repo
 
 import (
 	"context"
+	"strings"
 
 	aw "github.com/deanishe/awgo"
 	"github.com/hirakiuc/alfred-github-workflow/internal/api"
@@ -20,11 +21,11 @@ type PullsCommand struct {
 }
 
 // NewPullsCommand return an instance of PullsCommand
-func NewPullsCommand(owner string, repo string, query string) PullsCommand {
+func NewPullsCommand(owner string, repo string, args []string) PullsCommand {
 	return PullsCommand{
 		Owner: owner,
 		Repo:  repo,
-		Query: query,
+		Query: strings.Join(args, " "),
 		Limit: 100,
 	}
 }

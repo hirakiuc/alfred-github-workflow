@@ -2,6 +2,7 @@ package repo
 
 import (
 	"context"
+	"strings"
 
 	aw "github.com/deanishe/awgo"
 	"github.com/hirakiuc/alfred-github-workflow/internal/api"
@@ -19,12 +20,12 @@ type BranchesCommand struct {
 }
 
 // NewBranchesCommand return an instance of BranchesCommand
-func NewBranchesCommand(owner string, repo string, query string) BranchesCommand {
+func NewBranchesCommand(owner string, repo string, args []string) BranchesCommand {
 	return BranchesCommand{
 		Owner: owner,
 		Repo:  repo,
 
-		Query: query,
+		Query: strings.Join(args, " "),
 		Limit: 100,
 	}
 }

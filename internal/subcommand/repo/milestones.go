@@ -2,6 +2,7 @@ package repo
 
 import (
 	"context"
+	"strings"
 
 	aw "github.com/deanishe/awgo"
 	"github.com/hirakiuc/alfred-github-workflow/internal/api"
@@ -20,11 +21,11 @@ type MilestonesCommand struct {
 }
 
 // NewMilestonesCommand return a MilestonesCommand instance
-func NewMilestonesCommand(owner string, repo string, query string) MilestonesCommand {
+func NewMilestonesCommand(owner string, repo string, args []string) MilestonesCommand {
 	return MilestonesCommand{
 		Owner: owner,
 		Repo:  repo,
-		Query: query,
+		Query: strings.Join(args, " "),
 		Limit: 100,
 	}
 }
