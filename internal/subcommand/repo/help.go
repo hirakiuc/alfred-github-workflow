@@ -17,14 +17,16 @@ type HelpCommand struct {
 	Owner string
 	Repo  string
 
+	Query string
 	Limit int
 }
 
 // NewHelpCommand return an instance of this subcommand.
-func NewHelpCommand(owner string, repo string) HelpCommand {
+func NewHelpCommand(owner string, repo string, args []string) HelpCommand {
 	return HelpCommand{
 		Owner: owner,
 		Repo:  repo,
+		Query: strings.Join(args, " "),
 		Limit: 50,
 	}
 }
@@ -117,6 +119,10 @@ func (cmd HelpCommand) appendSubCommand(wf *aw.Workflow) {
 			Arg(cmd.htmlURL(sub.name)).
 			Valid(true)
 	}
+
+	if len(cmd.Query) > 0 {
+		wf.Filter(cmd.Query)
+	}
 }
 
 // Run start this subcommand
@@ -154,6 +160,10 @@ func (cmd HelpCommand) Run(ctx context.Context, wf *aw.Workflow) {
 					Autocomplete(cmd.Owner + "/" + repo.Name + " ").
 					Arg(repo.HTMLURL).
 					Valid(true)
+			}
+
+			if len(cmd.Query) > 0 {
+				wf.Filter(cmd.Query)
 			}
 		} else {
 			repo, err := cmd.fetchRepo(ctx, wf)

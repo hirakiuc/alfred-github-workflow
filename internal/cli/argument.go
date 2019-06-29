@@ -63,14 +63,12 @@ func (c *Command) createConfigSubCommand() {
 }
 
 func (c *Command) createOwnerSubCommand() {
+	parts := strings.Split(c.Args[0], repoSeparator)
 	c.Slug = &Slug{
-		Owner: c.Args[0],
+		Owner: parts[0],
 	}
 
-	// Remove first argument.
-	c.Args = c.Args[1:]
-
-	c.Subcmd = subcommand.NewReposCommand(c.Slug.Owner, c.Args)
+	c.Subcmd = subcommand.NewReposCommand(c.Slug.Owner, c.Args[1:])
 }
 
 func parseSubCommandArgs(args []string) (string, []string) {
@@ -91,26 +89,22 @@ func (c *Command) createRepoSubCommand() {
 		Repo:  parts[1],
 	}
 
-	// Remove first argument.
-	c.Args = c.Args[1:]
-
-	cmd, options := parseSubCommandArgs(c.Args)
-	query := strings.Join(options, " ")
+	cmd, options := parseSubCommandArgs(c.Args[1:])
 
 	switch cmd {
 	case "issues":
-		c.Subcmd = repocmd.NewIssueCommand(c.Slug.Owner, c.Slug.Repo, query)
+		c.Subcmd = repocmd.NewIssueCommand(c.Slug.Owner, c.Slug.Repo, options)
 	case "pulls":
-		c.Subcmd = repocmd.NewPullsCommand(c.Slug.Owner, c.Slug.Repo, query)
+		c.Subcmd = repocmd.NewPullsCommand(c.Slug.Owner, c.Slug.Repo, options)
 	case "branches":
-		c.Subcmd = repocmd.NewBranchesCommand(c.Slug.Owner, c.Slug.Repo, query)
+		c.Subcmd = repocmd.NewBranchesCommand(c.Slug.Owner, c.Slug.Repo, options)
 	case "milestones":
-		c.Subcmd = repocmd.NewMilestonesCommand(c.Slug.Owner, c.Slug.Repo, query)
+		c.Subcmd = repocmd.NewMilestonesCommand(c.Slug.Owner, c.Slug.Repo, options)
 	case "projects":
-		c.Subcmd = repocmd.NewProjectsCommand(c.Slug.Owner, c.Slug.Repo, query)
+		c.Subcmd = repocmd.NewProjectsCommand(c.Slug.Owner, c.Slug.Repo, options)
 	default:
 		// Show the subcommands
-		c.Subcmd = repocmd.NewHelpCommand(c.Slug.Owner, c.Slug.Repo)
+		c.Subcmd = repocmd.NewHelpCommand(c.Slug.Owner, c.Slug.Repo, c.Args[1:])
 	}
 }
 
@@ -154,7 +148,15 @@ func judgeType(word string) string {
 	case 1:
 		return cmdTypeOwner
 	case 2:
-		return cmdTypeRepo
+		if len(parts[0]) > 0 {
+			if len(parts[1]) > 0 {
+				return cmdTypeRepo
+			}
+
+			return cmdTypeOwner
+		}
+
+		return cmdTypeInvalid
 	default:
 		return cmdTypeInvalid
 	}
