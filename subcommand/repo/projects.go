@@ -55,6 +55,8 @@ func (cmd ProjectsCommand) fetchProjects(ctx context.Context, wf *aw.Workflow) (
 	return store.Store(cmd.Owner, cmd.Repo, projects)
 }
 
+func (cmd ProjectsCommand) Wait() {}
+
 // Run start this subcommand.
 func (cmd ProjectsCommand) Run(ctx context.Context, wf *aw.Workflow) {
 	projects, err := cmd.fetchProjects(ctx, wf)

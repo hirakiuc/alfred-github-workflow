@@ -55,6 +55,8 @@ func (cmd PullsCommand) fetchPulls(ctx context.Context, wf *aw.Workflow) ([]mode
 	return store.Store(cmd.Owner, cmd.Repo, pulls)
 }
 
+func (cmd PullsCommand) Wait() {}
+
 // Run start this subcommand.
 func (cmd PullsCommand) Run(ctx context.Context, wf *aw.Workflow) {
 	pulls, err := cmd.fetchPulls(ctx, wf)

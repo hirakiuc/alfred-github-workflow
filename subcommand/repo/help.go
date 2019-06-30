@@ -125,6 +125,8 @@ func (cmd HelpCommand) appendSubCommand(wf *aw.Workflow) {
 	}
 }
 
+func (cmd HelpCommand) Wait() {}
+
 // Run start this subcommand
 func (cmd HelpCommand) Run(ctx context.Context, wf *aw.Workflow) {
 	repos, err := cmd.fetchRepos(ctx, wf)

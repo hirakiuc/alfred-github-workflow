@@ -55,6 +55,8 @@ func (cmd BranchesCommand) fetchBranches(ctx context.Context, wf *aw.Workflow) (
 	return store.Store(cmd.Owner, cmd.Repo, branches)
 }
 
+func (cmd BranchesCommand) Wait() {}
+
 // Run start this subcommand.
 func (cmd BranchesCommand) Run(ctx context.Context, wf *aw.Workflow) {
 	branches, err := cmd.fetchBranches(ctx, wf)

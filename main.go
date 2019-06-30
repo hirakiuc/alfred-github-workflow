@@ -20,6 +20,9 @@ func run(wf *aw.Workflow) func() {
 
 		// Send results to Alfred
 		wf.SendFeedback()
+
+		// Wait the async process...
+		cmd.Wait()
 	}
 }
 

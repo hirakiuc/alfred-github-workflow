@@ -55,6 +55,8 @@ func (cmd IssueCommand) fetchIssues(ctx context.Context, wf *aw.Workflow) ([]mod
 	return store.Store(cmd.Owner, cmd.Repo, issues)
 }
 
+func (cmd IssueCommand) Wait() {}
+
 // Run start this subcommand.
 func (cmd IssueCommand) Run(ctx context.Context, wf *aw.Workflow) {
 	issues, err := cmd.fetchIssues(ctx, wf)

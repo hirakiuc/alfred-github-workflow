@@ -20,6 +20,8 @@ func NewTokenCommand(token string) TokenCommand {
 	}
 }
 
+func (cmd TokenCommand) Wait() {}
+
 // Run start this subcommand.
 func (cmd TokenCommand) Run(ctx context.Context, wf *aw.Workflow) {
 	store := secret.NewStore(wf)

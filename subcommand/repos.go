@@ -17,6 +17,9 @@ type ReposCommand struct {
 
 	Query string
 	Limit int
+
+	runner *api.AsyncCall
+	ch     chan []model.Repo
 }
 
 // NewReposCommand return a ReposCommand instance.
@@ -25,6 +28,9 @@ func NewReposCommand(owner string, args []string) ReposCommand {
 		Owner: owner,
 		Query: strings.Join(args, " "),
 		Limit: 50,
+
+		runner: api.NewAsyncCall(),
+		ch:     make(chan []model.Repo, 1),
 	}
 }
 
@@ -40,26 +46,48 @@ func (cmd ReposCommand) fetchRepos(ctx context.Context, wf *aw.Workflow) ([]mode
 		return repos, nil
 	}
 
-	client, err := api.NewClient(ctx, wf)
+	ch := cmd.ch
+	cb := func() error {
+		client, err := api.NewClient(ctx, wf)
+		if err != nil {
+			ch <- []model.Repo{}
+			return err
+		}
+
+		repos, err = client.FetchReposByOwner(ctx, cmd.Owner)
+		if err != nil {
+			ch <- []model.Repo{}
+			return err
+		}
+
+		if len(repos) > 1 {
+			repos, err := store.Store(cmd.Owner, repos)
+			ch <- repos
+			return err
+		}
+
+		repos, err = client.FetchReposByOrgs(ctx, cmd.Owner)
+		if err != nil {
+			ch <- repos
+			return err
+		}
+
+		repos, err := store.Store(cmd.Owner, repos)
+		ch <- repos
+		return err
+	}
+
+	err = cmd.runner.RunWithTimeout(cb)
 	if err != nil {
 		return []model.Repo{}, err
 	}
 
-	repos, err = client.FetchReposByOwner(ctx, cmd.Owner)
-	if err != nil {
-		return []model.Repo{}, err
-	}
+	return <-ch, nil
+}
 
-	if len(repos) > 1 {
-		return store.Store(cmd.Owner, repos)
-	}
-
-	repos, err = client.FetchReposByOrgs(ctx, cmd.Owner)
-	if err != nil {
-		return []model.Repo{}, err
-	}
-
-	return store.Store(cmd.Owner, repos)
+func (cmd ReposCommand) Wait() {
+	cmd.runner.Wait()
+	close(cmd.ch)
 }
 
 // Run start this subcommand.

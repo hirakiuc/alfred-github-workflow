@@ -55,6 +55,8 @@ func (cmd MilestonesCommand) fetchMilestones(ctx context.Context, wf *aw.Workflo
 	return store.Store(cmd.Owner, cmd.Repo, milestones)
 }
 
+func (cmd MilestonesCommand) Wait() {}
+
 // Run start this subcommand
 func (cmd MilestonesCommand) Run(ctx context.Context, wf *aw.Workflow) {
 	milestones, err := cmd.fetchMilestones(ctx, wf)

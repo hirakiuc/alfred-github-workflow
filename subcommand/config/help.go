@@ -15,6 +15,8 @@ func NewHelpCommand() HelpCommand {
 	return HelpCommand{}
 }
 
+func (cmd HelpCommand) Wait() {}
+
 // Run start this subcommand.
 func (cmd HelpCommand) Run(_ctx context.Context, wf *aw.Workflow) {
 	subcommands := []string{

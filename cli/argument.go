@@ -117,6 +117,11 @@ func (c *Command) Run(ctx context.Context, wf *aw.Workflow) {
 	c.Subcmd.Run(ctx, wf)
 }
 
+// Wait...
+func (c *Command) Wait() {
+	c.Subcmd.Wait()
+}
+
 func normalizeArgs(args []string) []string {
 	ret := []string{}
 

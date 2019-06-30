@@ -27,3 +27,5 @@ func (cmd HelpCommand) Run(_ctx context.Context, wf *aw.Workflow) {
 		wf.NewItem(name)
 	}
 }
+
+func (cmd HelpCommand) Wait() {}
