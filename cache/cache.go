@@ -3,9 +3,9 @@ package cache
 import "time"
 
 const (
-	maxCacheAgeMinutes = 1 // How long to cache data
+	maxCacheAgeDays = 7 // How long to cache data
 )
 
 func getMaxCacheAge() time.Duration {
-	return maxCacheAgeMinutes * time.Minute
+	return time.Duration(maxCacheAgeDays) * (time.Second * 60 * 60 * 24)
 }
