@@ -2,6 +2,7 @@ package cache
 
 import (
 	"fmt"
+	"time"
 
 	aw "github.com/deanishe/awgo"
 	"github.com/hirakiuc/alfred-github-workflow/model"
@@ -23,6 +24,10 @@ func (cache *ReposCache) getCacheKey(owner string) string {
 	return fmt.Sprintf("repos-%s", owner)
 }
 
+func getMaxRepoCacheAge() time.Duration {
+	return time.Duration(24*7) * time.Hour
+}
+
 // GetCache return the repository cache.
 func (cache *ReposCache) GetCache(owner string) ([]model.Repo, error) {
 	cacheKey := cache.getCacheKey(owner)
@@ -34,7 +39,7 @@ func (cache *ReposCache) GetCache(owner string) ([]model.Repo, error) {
 		return []model.Repo{}, nil
 	}
 
-	if store.Expired(cacheKey, getMaxCacheAge()) {
+	if store.Expired(cacheKey, getMaxRepoCacheAge()) {
 		return []model.Repo{}, nil
 	}
 
