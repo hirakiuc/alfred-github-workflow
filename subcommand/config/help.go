@@ -19,9 +19,12 @@ func NewHelpCommand() HelpCommand {
 func (cmd HelpCommand) Run(_ctx context.Context, wf *aw.Workflow) {
 	subcommands := []string{
 		"token",
+		"clear-cache",
 	}
 
 	for _, name := range subcommands {
-		wf.NewItem(name)
+		wf.NewItem(name).
+			Autocomplete("> " + name).
+			Valid(true)
 	}
 }
