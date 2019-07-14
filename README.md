@@ -43,6 +43,7 @@ Alfred workflow to view the github resources.
 | status | command | description |
 |:-------|:--------|:------------|
 | x | gh > token | Configure the github api token |
+| x | gh > clear-cache | clear the current caches |
 
 # License
 
