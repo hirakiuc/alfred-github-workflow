@@ -34,13 +34,14 @@ type Command struct {
 }
 
 func parseConfigCommandArgs(args []string) (string, []string) {
+	// args: {">", ...}
 	switch len(args) {
-	case 0:
+	case 0, 1:
 		return "help", []string{}
-	case 1:
-		return args[0], []string{}
+	case 2:
+		return args[1], []string{}
 	default:
-		return args[0], args[1:]
+		return args[1], args[2:]
 	}
 }
 
@@ -48,7 +49,6 @@ func (c *Command) createConfigSubCommand() {
 	c.Slug = nil
 
 	cmd, opts := parseConfigCommandArgs(c.Args)
-
 	switch cmd {
 	case "token":
 		token := ""
@@ -57,6 +57,8 @@ func (c *Command) createConfigSubCommand() {
 		}
 
 		c.Subcmd = configcmd.NewTokenCommand(token)
+	case "clear-cache":
+		c.Subcmd = configcmd.NewClearCacheCommand()
 	default:
 		c.Subcmd = configcmd.NewHelpCommand()
 	}
