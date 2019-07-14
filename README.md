@@ -38,6 +38,15 @@ Alfred workflow to view the github resources.
 | - | gh user/repo pulse | Show the pulse page |
 | - | gh user/repo wiki | Show the wiki page |
 
+## My
+
+| status | command | description |
+|:-------|:--------|:------------|
+| - | gh my created | ... |
+| - | gh my assigned | ... |
+| - | gh my mentioned | ... |
+| - | gh my review-requests | ... |
+
 ## Configs
 
 | status | command | description |
