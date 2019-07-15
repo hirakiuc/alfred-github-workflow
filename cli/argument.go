@@ -7,6 +7,8 @@ import (
 	aw "github.com/deanishe/awgo"
 	"github.com/hirakiuc/alfred-github-workflow/subcommand"
 	configcmd "github.com/hirakiuc/alfred-github-workflow/subcommand/config"
+	mycmd "github.com/hirakiuc/alfred-github-workflow/subcommand/my"
+	mypullscmd "github.com/hirakiuc/alfred-github-workflow/subcommand/my/pulls"
 	repocmd "github.com/hirakiuc/alfred-github-workflow/subcommand/repo"
 )
 
@@ -23,6 +25,8 @@ const (
 	cmdTypeConfig  = ">"
 	cmdTypeOwner   = "owner"
 	cmdTypeRepo    = "repo"
+	cmdTypeMy      = "my"
+	cmdTypeHelp    = "help"
 	cmdTypeInvalid = "invalid"
 )
 
@@ -37,7 +41,7 @@ func parseConfigCommandArgs(args []string) (string, []string) {
 	// args: {">", ...}
 	switch len(args) {
 	case 0, 1:
-		return "help", []string{}
+		return cmdTypeHelp, []string{}
 	case 2:
 		return args[1], []string{}
 	default:
@@ -76,7 +80,7 @@ func (c *Command) createOwnerSubCommand() {
 func parseSubCommandArgs(args []string) (string, []string) {
 	switch len(args) {
 	case 0:
-		return "help", []string{}
+		return cmdTypeHelp, []string{}
 	case 1:
 		return args[0], []string{}
 	default:
@@ -110,6 +114,52 @@ func (c *Command) createRepoSubCommand() {
 	}
 }
 
+func (c *Command) createMySubCommand() {
+	cmd, opts := parseMyCommandArgs(c.Args)
+
+	switch cmd {
+	case "pulls":
+		c.createMyPullsCommand()
+	default:
+		c.Subcmd = mycmd.NewHelpCommand(opts)
+	}
+}
+
+func parseMyCommandArgs(args []string) (string, []string) {
+	// args: {"my", ...}
+	switch len(args) {
+	case 0, 1:
+		return cmdTypeHelp, []string{}
+	case 2:
+		return args[1], []string{}
+	default:
+		return args[1], args[2:]
+	}
+}
+
+func (c *Command) createMyPullsCommand() {
+	cmd, opts := parseMyPullsCommandArgs(c.Args)
+
+	switch cmd {
+	case "review-requests":
+		c.Subcmd = mypullscmd.NewReviewRequestsCommand(opts)
+	default:
+		c.Subcmd = mypullscmd.NewHelpCommand(opts)
+	}
+}
+
+func parseMyPullsCommandArgs(args []string) (string, []string) {
+	// args: {"my", "pulls", cmd, ...}
+	switch len(args) {
+	case 0, 1, 2:
+		return cmdTypeHelp, []string{}
+	case 3:
+		return args[2], []string{}
+	default:
+		return args[2], args[3:]
+	}
+}
+
 func (c *Command) createHelpCommand() {
 	c.Subcmd = subcommand.NewHelpCommand()
 }
@@ -136,13 +186,21 @@ func normalizeArgs(args []string) []string {
 	return ret
 }
 
-func judgeType(word string) string {
-	if word == "" {
-		return cmdTypeEmpty
+func judgeType(args []string) string {
+	if len(args) == 0 {
+		return cmdTypeHelp
 	}
 
-	if word == ">" {
+	word := args[0]
+	switch word {
+	case "":
+		return cmdTypeEmpty
+	case ">":
 		return cmdTypeConfig
+	case "my":
+		return cmdTypeMy
+	default:
+		// continue
 	}
 
 	parts := strings.Split(word, repoSeparator)
@@ -170,7 +228,7 @@ func ParseArgs(arguments []string) *Command {
 		Args: normalizeArgs(arguments),
 	}
 
-	cmdType := judgeType(cmd.Args[0])
+	cmdType := judgeType(cmd.Args)
 	switch cmdType {
 	case cmdTypeConfig:
 		cmd.createConfigSubCommand()
@@ -178,6 +236,8 @@ func ParseArgs(arguments []string) *Command {
 		cmd.createOwnerSubCommand()
 	case cmdTypeRepo:
 		cmd.createRepoSubCommand()
+	case cmdTypeMy:
+		cmd.createMySubCommand()
 	default:
 		cmd.createHelpCommand()
 	}

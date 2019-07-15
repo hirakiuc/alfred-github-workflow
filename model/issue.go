@@ -46,19 +46,24 @@ func (i Issue) GetItemSubtitle() string {
 	}
 }
 
-// ConvertIssues convert github.Issue to Issue
+// ConvertIssues convert array of github.Issue to array of Issue
 func ConvertIssues(issues []*github.Issue) []Issue {
 	items := []Issue{}
 	for _, issue := range issues {
-		items = append(items, Issue{
-			Number:    issue.GetNumber(),
-			Title:     issue.GetTitle(),
-			State:     issue.GetState(),
-			HTMLURL:   issue.GetHTMLURL(),
-			Reporter:  issue.GetUser().GetName(),
-			CreatedAt: issue.GetCreatedAt(),
-			ClosedAt:  issue.GetClosedAt(),
-		})
+		items = append(items, ConvertIssue(issue))
 	}
 	return items
+}
+
+// ConvertIssue convert github.Issue to Issue
+func ConvertIssue(issue *github.Issue) Issue {
+	return Issue{
+		Number:    issue.GetNumber(),
+		Title:     issue.GetTitle(),
+		State:     issue.GetState(),
+		HTMLURL:   issue.GetHTMLURL(),
+		Reporter:  issue.GetUser().GetName(),
+		CreatedAt: issue.GetCreatedAt(),
+		ClosedAt:  issue.GetClosedAt(),
+	}
 }
