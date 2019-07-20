@@ -17,14 +17,24 @@ func NewHelpCommand() HelpCommand {
 
 // Run start this subcommand.
 func (cmd HelpCommand) Run(_ctx context.Context, wf *aw.Workflow) {
-	subcommands := []string{
-		"token",
-		"clear-cache",
+	subcommands := []struct {
+		name string
+		desc string
+	}{
+		{
+			name: "token",
+			desc: "Configure github token.",
+		},
+		{
+			name: "clear-cache",
+			desc: "Clear caches.",
+		},
 	}
 
-	for _, name := range subcommands {
-		wf.NewItem(name).
-			Autocomplete("> " + name).
+	for _, cmd := range subcommands {
+		wf.NewItem(cmd.name).
+			Subtitle(cmd.desc).
+			Autocomplete("> " + cmd.name).
 			Valid(true)
 	}
 }

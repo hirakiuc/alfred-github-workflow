@@ -95,20 +95,20 @@ func (cmd HelpCommand) appendSubCommand(wf *aw.Workflow) {
 		desc string
 	}{
 		{
-			"branches",
-			"Show branches",
+			name: "branches",
+			desc: "Show branches",
 		},
 		{
-			"issues",
-			"Show issues",
+			name: "issues",
+			desc: "Show issues",
 		},
 		{
-			"milestones",
-			"Show milestones",
+			name: "milestones",
+			desc: "Show milestones",
 		},
 		{
-			"pulls",
-			"Show pull requests",
+			name: "pulls",
+			desc: "Show pull requests",
 		},
 	}
 

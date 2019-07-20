@@ -17,13 +17,32 @@ func NewHelpCommand() HelpCommand {
 
 // Run start this subcommand.
 func (cmd HelpCommand) Run(_ctx context.Context, wf *aw.Workflow) {
-	subcommands := []string{
-		"user",
-		"user/repo",
-		">",
+	subcommands := []struct {
+		name string
+		desc string
+	}{
+		{
+			name: "user",
+			desc: "",
+		},
+		{
+			name: "user/repo",
+			desc: "",
+		},
+		{
+			name: ">",
+			desc: "",
+		},
+		{
+			name: "my",
+			desc: "",
+		},
 	}
 
-	for _, name := range subcommands {
-		wf.NewItem(name)
+	for _, cmd := range subcommands {
+		wf.NewItem(cmd.name).
+			Subtitle(cmd.desc).
+			Autocomplete(cmd.name).
+			Valid(false)
 	}
 }
