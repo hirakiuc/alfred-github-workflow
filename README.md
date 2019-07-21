@@ -40,12 +40,14 @@ Alfred workflow to view the github resources.
 
 ## My
 
+### Pulls
+
 | status | command | description |
 |:-------|:--------|:------------|
-| - | gh my created | ... |
-| - | gh my assigned | ... |
-| - | gh my mentioned | ... |
-| - | gh my review-requests | ... |
+| x | gh my pulls created | ... |
+| x | gh my pulls assigned | ... |
+| x | gh my pulls mentioned | ... |
+| x | gh my pulls review-requests | ... |
 
 ## Configs
 
