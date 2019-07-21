@@ -9,13 +9,15 @@ import (
 
 // IssuesCache describe an instance of issue cache.
 type IssuesCache struct {
-	wf *aw.Workflow
+	*BaseCache
 }
 
 // NewIssuesCache return an instance of issue cache store.
 func NewIssuesCache(wf *aw.Workflow) *IssuesCache {
 	return &IssuesCache{
-		wf: wf,
+		&BaseCache{
+			wf: wf,
+		},
 	}
 }
 
@@ -27,20 +29,13 @@ func (cache *IssuesCache) getCacheKey(owner string, repo string) string {
 func (cache *IssuesCache) GetCache(owner string, repo string) ([]model.Issue, error) {
 	cacheKey := cache.getCacheKey(owner, repo)
 
-	store := cache.wf.Cache
-
 	issues := []model.Issue{}
-	if !store.Exists(cacheKey) {
-		return []model.Issue{}, nil
-	}
-
-	if store.Expired(cacheKey, getMaxCacheAge()) {
-		return []model.Issue{}, nil
-	}
-
-	if err := store.LoadJSON(cacheKey, &issues); err != nil {
-		cache.wf.FatalError(err)
+	err := cache.getRawCache(cacheKey, getMaxCacheAge(), &issues)
+	if err != nil {
 		return []model.Issue{}, err
+	}
+	if issues == nil {
+		return []model.Issue{}, nil
 	}
 
 	return issues, nil
@@ -49,11 +44,10 @@ func (cache *IssuesCache) GetCache(owner string, repo string) ([]model.Issue, er
 // Store stores the issues to the cache.
 func (cache *IssuesCache) Store(owner string, repo string, issues []model.Issue) ([]model.Issue, error) {
 	cacheKey := cache.getCacheKey(owner, repo)
-	store := cache.wf.Cache
 
-	if err := store.StoreJSON(cacheKey, issues); err != nil {
-		cache.wf.FatalError(err)
-		return []model.Issue{}, err
+	_, err := cache.storeRawData(cacheKey, issues)
+	if err != nil {
+		return issues, err
 	}
 
 	return issues, nil

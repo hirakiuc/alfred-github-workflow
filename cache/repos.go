@@ -10,13 +10,15 @@ import (
 
 // ReposCache describe an instance of repository cache.
 type ReposCache struct {
-	wf *aw.Workflow
+	*BaseCache
 }
 
 // NewReposCache return an instance of repository cache store.
 func NewReposCache(wf *aw.Workflow) *ReposCache {
 	return &ReposCache{
-		wf: wf,
+		&BaseCache{
+			wf: wf,
+		},
 	}
 }
 
@@ -32,20 +34,13 @@ func getMaxRepoCacheAge() time.Duration {
 func (cache *ReposCache) GetCache(owner string) ([]model.Repo, error) {
 	cacheKey := cache.getCacheKey(owner)
 
-	store := cache.wf.Cache
-
 	repos := []model.Repo{}
-	if !store.Exists(cacheKey) {
-		return []model.Repo{}, nil
-	}
-
-	if store.Expired(cacheKey, getMaxRepoCacheAge()) {
-		return []model.Repo{}, nil
-	}
-
-	if err := store.LoadJSON(cacheKey, &repos); err != nil {
-		cache.wf.FatalError(err)
+	err := cache.getRawCache(cacheKey, getMaxRepoCacheAge(), &repos)
+	if err != nil {
 		return []model.Repo{}, err
+	}
+	if repos == nil {
+		return []model.Repo{}, nil
 	}
 
 	return repos, nil
@@ -54,11 +49,10 @@ func (cache *ReposCache) GetCache(owner string) ([]model.Repo, error) {
 // Store stores the repos to the cache.
 func (cache *ReposCache) Store(owner string, repos []model.Repo) ([]model.Repo, error) {
 	cacheKey := cache.getCacheKey(owner)
-	store := cache.wf.Cache
 
-	if err := store.StoreJSON(cacheKey, repos); err != nil {
-		cache.wf.FatalError(err)
-		return []model.Repo{}, err
+	_, err := cache.storeRawData(cacheKey, repos)
+	if err != nil {
+		return repos, err
 	}
 
 	return repos, nil
