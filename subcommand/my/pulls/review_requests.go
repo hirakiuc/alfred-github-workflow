@@ -23,28 +23,7 @@ func NewReviewRequestsCommand(args []string) ReviewRequestsCommand {
 	}
 }
 
-func (cmd ReviewRequestsCommand) fetchUser(
-	ctx context.Context, wf *aw.Workflow, client *api.Client) (*model.User, error) {
-	store := cache.NewAuthenticatedUserCache(wf)
-
-	user, err := store.GetCache()
-	if err != nil {
-		return nil, err
-	}
-
-	if user != nil {
-		return user, nil
-	}
-
-	user, err = client.FetchAuthenticatedUser(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	return store.Store(user)
-}
-
-func (cmd ReviewRequestsCommand) fetchReviewRequests(
+func fetchReviewRequests(
 	ctx context.Context, wf *aw.Workflow, client *api.Client, user string) ([]model.Issue, error) {
 	store := cache.NewReviewRequestsCache(wf)
 
@@ -74,13 +53,13 @@ func (cmd ReviewRequestsCommand) Run(ctx context.Context, wf *aw.Workflow) {
 		return
 	}
 
-	user, err := cmd.fetchUser(ctx, wf, client)
+	user, err := fetchUser(ctx, wf, client)
 	if err != nil {
 		wf.FatalError(err)
 		return
 	}
 
-	issues, err := cmd.fetchReviewRequests(ctx, wf, client, user.Login)
+	issues, err := fetchReviewRequests(ctx, wf, client, user.Login)
 	if err != nil {
 		wf.FatalError(err)
 		return

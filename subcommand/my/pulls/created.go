@@ -11,21 +11,20 @@ import (
 	"github.com/hirakiuc/alfred-github-workflow/model"
 )
 
-type MentionedCommand struct {
+type CreatedCommand struct {
 	Query string
 	Limit int
 }
 
-func NewMentionedCommand(args []string) MentionedCommand {
-	return MentionedCommand{
+func NewCreatedCommand(args []string) CreatedCommand {
+	return CreatedCommand{
 		Query: strings.Join(args, " "),
 		Limit: 100,
 	}
 }
 
-func fetchMentioned(
-	ctx context.Context, wf *aw.Workflow, client *api.Client, user string) ([]model.Issue, error) {
-	store := cache.NewMentionedCache(wf)
+func fetchPullsCreated(ctx context.Context, wf *aw.Workflow, client *api.Client, user string) ([]model.Issue, error) {
+	store := cache.NewPullsCreatedCache(wf)
 
 	issues, err := store.GetCache(user)
 	if err != nil {
@@ -35,7 +34,7 @@ func fetchMentioned(
 		return issues, nil
 	}
 
-	issues, err = client.FetchMentioned(ctx, user)
+	issues, err = client.FetchPullsCreated(ctx, user)
 	if err != nil {
 		return []model.Issue{}, err
 	}
@@ -46,7 +45,7 @@ func fetchMentioned(
 	return store.Store(user, issues)
 }
 
-func (cmd MentionedCommand) Run(ctx context.Context, wf *aw.Workflow) {
+func (cmd CreatedCommand) Run(ctx context.Context, wf *aw.Workflow) {
 	client, err := api.NewClient(ctx, wf)
 	if err != nil {
 		wf.FatalError(err)
@@ -59,27 +58,21 @@ func (cmd MentionedCommand) Run(ctx context.Context, wf *aw.Workflow) {
 		return
 	}
 
-	issues, err := fetchMentioned(ctx, wf, client, user.Login)
+	issues, err := fetchPullsCreated(ctx, wf, client, user.Login)
 	if err != nil {
 		wf.FatalError(err)
 		return
 	}
 
-	pullIcon, _ := icon.GetIcon(icon.TypePull)
-	issueIcon, _ := icon.GetIcon(icon.TypeIssue)
+	icon, _ := icon.GetIcon(icon.TypePull)
 
-	// Add items
+	// Add Items
 	for _, issue := range issues {
-		item := wf.NewItem(issue.GetItemTitle()).
+		wf.NewItem(issue.GetItemTitle()).
 			Subtitle(issue.GetItemSubtitle()).
 			Arg(issue.HTMLURL).
+			Icon(icon).
 			Valid(true)
-
-		if issue.IsPullRequest {
-			item.Icon(pullIcon)
-		} else {
-			item.Icon(issueIcon)
-		}
 	}
 
 	if len(cmd.Query) > 0 {
@@ -87,5 +80,5 @@ func (cmd MentionedCommand) Run(ctx context.Context, wf *aw.Workflow) {
 	}
 
 	// Show a warning in Alfred if there are no items
-	wf.WarnEmpty("No issues/pulls found.", "")
+	wf.WarnEmpty("No pulls found.", "")
 }
