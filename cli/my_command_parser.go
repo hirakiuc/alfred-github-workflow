@@ -9,6 +9,7 @@ import (
 const (
 	cmdTypeMyPulls = "pulls"
 
+	cmdTypeMyPullsAssigned       = "assigned"
 	cmdTypeMyPullsCreated        = "created"
 	cmdTypeMyPullsMentioned      = "mentioned"
 	cmdTypeMyPullsReviewRequests = "review-requests"
@@ -43,6 +44,8 @@ func (p *MyCommandParser) parsePullsCommand() subcommand.SubCommand {
 	opts := p.tokenizer.RestOfTokens()
 
 	switch token {
+	case cmdTypeMyPullsAssigned:
+		return pulls.NewAssignedCommand(opts)
 	case cmdTypeMyPullsCreated:
 		return pulls.NewCreatedCommand(opts)
 	case cmdTypeMyPullsMentioned:
