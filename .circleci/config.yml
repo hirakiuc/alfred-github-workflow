@@ -47,6 +47,15 @@ jobs:
           key: mod-{{ .Environment.COMMON_CACHE_KEY }}-{{ checksum "go.mod" }}
       - run:
           command: make build
+  test:
+    executor: go-executor
+    steps:
+      - attach_workspace:
+          at: /go/src/github.com/hirakiuc
+      - restore_cache:
+          key: mod-{{ .Environment.COMMON_CACHE_KEY }}-{{ checksum "go.mod" }}
+      - run:
+          command: make test
 
 workflows:
   version: 2
@@ -54,6 +63,9 @@ workflows:
     jobs:
       - checkout-code
       - check:
+          requires:
+            - checkout-code
+      - test:
           requires:
             - checkout-code
       - build:
