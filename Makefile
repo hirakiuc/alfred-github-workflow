@@ -4,6 +4,9 @@ DIR_NAME := `basename ${PWD}`
 
 NAME := gh
 
+test:
+	go test ./...
+
 dev-deps:
 	go get -u golang.org/x/lint/golint
 
@@ -33,4 +36,4 @@ link:
 unlink:
 	rm -i ${ALFRED_WORKFLOW_DIR}/${DIR_NAME}
 
-.PHONY: build install check clean
+.PHONY: build install check clean test
