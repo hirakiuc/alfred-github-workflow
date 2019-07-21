@@ -8,12 +8,14 @@ import (
 )
 
 type ReviewRequestsCache struct {
-	wf *aw.Workflow
+	*BaseCache
 }
 
 func NewReviewRequestsCache(wf *aw.Workflow) *ReviewRequestsCache {
 	return &ReviewRequestsCache{
-		wf: wf,
+		&BaseCache{
+			wf: wf,
+		},
 	}
 }
 
@@ -24,18 +26,12 @@ func (cache *ReviewRequestsCache) getCacheKey(user string) string {
 func (cache *ReviewRequestsCache) GetCache(user string) ([]model.Issue, error) {
 	cacheKey := cache.getCacheKey(user)
 
-	store := cache.wf.Cache
 	issues := []model.Issue{}
-	if !store.Exists(cacheKey) {
-		return issues, nil
+	err := cache.getRawCache(cacheKey, getMaxCacheAge(), &issues)
+	if err != nil {
+		return []model.Issue{}, err
 	}
-
-	if store.Expired(cacheKey, getMaxCacheAge()) {
-		return issues, nil
-	}
-
-	if err := store.LoadJSON(cacheKey, &issues); err != nil {
-		cache.wf.FatalError(err)
+	if issues == nil {
 		return []model.Issue{}, nil
 	}
 
@@ -44,11 +40,10 @@ func (cache *ReviewRequestsCache) GetCache(user string) ([]model.Issue, error) {
 
 func (cache *ReviewRequestsCache) Store(user string, issues []model.Issue) ([]model.Issue, error) {
 	cacheKey := cache.getCacheKey(user)
-	store := cache.wf.Cache
 
-	if err := store.StoreJSON(cacheKey, issues); err != nil {
-		cache.wf.FatalError(err)
-		return []model.Issue{}, err
+	_, err := cache.storeRawData(cacheKey, issues)
+	if err != nil {
+		return issues, err
 	}
 
 	return issues, nil

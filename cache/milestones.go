@@ -9,13 +9,15 @@ import (
 
 // MilestonesCache describe an instance of milestone cache.
 type MilestonesCache struct {
-	wf *aw.Workflow
+	*BaseCache
 }
 
 // NewMilestonesCache return an instance of milestone cache store.
 func NewMilestonesCache(wf *aw.Workflow) *MilestonesCache {
 	return &MilestonesCache{
-		wf: wf,
+		&BaseCache{
+			wf: wf,
+		},
 	}
 }
 
@@ -27,34 +29,27 @@ func (cache MilestonesCache) getCacheKey(owner string, repo string) string {
 func (cache *MilestonesCache) GetCache(owner string, repo string) ([]model.Milestone, error) {
 	cacheKey := cache.getCacheKey(owner, repo)
 
-	store := cache.wf.Cache
-
 	milestones := []model.Milestone{}
-	if !store.Exists(cacheKey) {
-		return []model.Milestone{}, nil
-	}
-
-	if store.Expired(cacheKey, getMaxCacheAge()) {
-		return []model.Milestone{}, nil
-	}
-
-	if err := store.LoadJSON(cacheKey, &milestones); err != nil {
-		cache.wf.FatalError(err)
+	err := cache.getRawCache(cacheKey, getMaxCacheAge(), &milestones)
+	if err != nil {
 		return []model.Milestone{}, err
+	}
+	if milestones == nil {
+		return []model.Milestone{}, nil
 	}
 
 	return milestones, nil
 }
 
 // Store stores the branches to the cache.
-func (cache *MilestonesCache) Store(owner string, repo string, branches []model.Milestone) ([]model.Milestone, error) {
+func (cache *MilestonesCache) Store(
+	owner string, repo string, milestones []model.Milestone) ([]model.Milestone, error) {
 	cacheKey := cache.getCacheKey(owner, repo)
-	store := cache.wf.Cache
 
-	if err := store.StoreJSON(cacheKey, branches); err != nil {
-		cache.wf.FatalError(err)
-		return []model.Milestone{}, err
+	_, err := cache.storeRawData(cacheKey, milestones)
+	if err != nil {
+		return milestones, err
 	}
 
-	return branches, nil
+	return milestones, nil
 }

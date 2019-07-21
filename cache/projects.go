@@ -9,13 +9,15 @@ import (
 
 // ProjectsCache describe an instance of project cache.
 type ProjectsCache struct {
-	wf *aw.Workflow
+	*BaseCache
 }
 
 // NewProjectsCache return an instance of project cache store.
 func NewProjectsCache(wf *aw.Workflow) *ProjectsCache {
 	return &ProjectsCache{
-		wf: wf,
+		&BaseCache{
+			wf: wf,
+		},
 	}
 }
 
@@ -26,20 +28,14 @@ func (cache *ProjectsCache) getCacheKey(owner string, repo string) string {
 // GetCache return the project cache.
 func (cache *ProjectsCache) GetCache(owner string, repo string) ([]model.Project, error) {
 	cacheKey := cache.getCacheKey(owner, repo)
-	store := cache.wf.Cache
 
 	projects := []model.Project{}
-	if !store.Exists(cacheKey) {
-		return projects, nil
-	}
-
-	if store.Expired(cacheKey, getMaxCacheAge()) {
-		return projects, nil
-	}
-
-	if err := store.LoadJSON(cacheKey, &projects); err != nil {
-		cache.wf.FatalError(err)
+	err := cache.getRawCache(cacheKey, getMaxCacheAge(), &projects)
+	if err != nil {
 		return []model.Project{}, err
+	}
+	if projects == nil {
+		return []model.Project{}, nil
 	}
 
 	return projects, nil
@@ -48,11 +44,10 @@ func (cache *ProjectsCache) GetCache(owner string, repo string) ([]model.Project
 // Store stores the projects to the cache.
 func (cache *ProjectsCache) Store(owner string, repo string, projects []model.Project) ([]model.Project, error) {
 	cacheKey := cache.getCacheKey(owner, repo)
-	store := cache.wf.Cache
 
-	if err := store.StoreJSON(cacheKey, projects); err != nil {
-		cache.wf.FatalError(err)
-		return []model.Project{}, err
+	_, err := cache.storeRawData(cacheKey, projects)
+	if err != nil {
+		return projects, err
 	}
 
 	return projects, nil

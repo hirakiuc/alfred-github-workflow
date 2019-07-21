@@ -21,12 +21,10 @@ func NewRepoCommandParser(tokenizer *Tokenizer, owner string, repo string) RepoC
 
 func (p RepoCommandParser) Parse() subcommand.SubCommand {
 	// owner/repo, ...
+	token := p.tokenizer.NextToken()
 	opts := p.tokenizer.RestOfTokens()
-	if len(opts) == 0 {
-		return repo.NewHelpCommand(p.Owner, p.Repo, []string{})
-	}
 
-	switch opts[0] {
+	switch token {
 	case "branches":
 		return repo.NewBranchesCommand(p.Owner, p.Repo, opts)
 	case "issues":

@@ -9,13 +9,15 @@ import (
 
 // BranchesCache describe an instance of branch cache
 type BranchesCache struct {
-	wf *aw.Workflow
+	*BaseCache
 }
 
 // NewBranchesCache return an instance of branch cache store.
 func NewBranchesCache(wf *aw.Workflow) *BranchesCache {
 	return &BranchesCache{
-		wf: wf,
+		&BaseCache{
+			wf: wf,
+		},
 	}
 }
 
@@ -27,19 +29,12 @@ func (cache *BranchesCache) getCacheKey(owner string, repo string) string {
 func (cache *BranchesCache) GetCache(owner string, repo string) ([]model.Branch, error) {
 	cacheKey := cache.getCacheKey(owner, repo)
 
-	store := cache.wf.Cache
-
 	branches := []model.Branch{}
-	if !store.Exists(cacheKey) {
-		return []model.Branch{}, nil
+	err := cache.getRawCache(cacheKey, getMaxCacheAge(), &branches)
+	if err != nil {
+		return []model.Branch{}, err
 	}
-
-	if store.Expired(cacheKey, getMaxCacheAge()) {
-		return []model.Branch{}, nil
-	}
-
-	if err := store.LoadJSON(cacheKey, &branches); err != nil {
-		cache.wf.FatalError(err)
+	if branches == nil {
 		return []model.Branch{}, nil
 	}
 
@@ -49,11 +44,10 @@ func (cache *BranchesCache) GetCache(owner string, repo string) ([]model.Branch,
 // Store stores the branches to the cache.
 func (cache *BranchesCache) Store(owner string, repo string, branches []model.Branch) ([]model.Branch, error) {
 	cacheKey := cache.getCacheKey(owner, repo)
-	store := cache.wf.Cache
 
-	if err := store.StoreJSON(cacheKey, branches); err != nil {
-		cache.wf.FatalError(err)
-		return []model.Branch{}, err
+	_, err := cache.storeRawData(cacheKey, branches)
+	if err != nil {
+		return branches, err
 	}
 
 	return branches, nil
