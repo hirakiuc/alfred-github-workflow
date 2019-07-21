@@ -9,24 +9,12 @@ import (
 	"github.com/hirakiuc/alfred-github-workflow/model"
 )
 
-func (client *Client) FetchReviewRequests(ctx context.Context, user string) ([]model.Issue, error) {
-	queryParams := []string{
-		"is:pr",
-		"is:open",
-		fmt.Sprintf("review-requested:%s", user),
-		"archived:false",
-	}
-	q := strings.Join(queryParams, " ")
-
-	opt := github.SearchOptions{
-		Sort:  "updated",
-		Order: "desc",
-	}
-
+func (client *Client) SearchIssues(
+	ctx context.Context, query string, opt *github.SearchOptions) ([]model.Issue, error) {
 	items := []model.Issue{}
 
 	for {
-		result, resp, err := client.github.Search.Issues(ctx, q, &opt)
+		result, resp, err := client.github.Search.Issues(ctx, query, opt)
 		if err != nil {
 			return items, err
 		}
@@ -42,4 +30,21 @@ func (client *Client) FetchReviewRequests(ctx context.Context, user string) ([]m
 
 		opt.Page = resp.NextPage
 	}
+}
+
+func (client *Client) FetchReviewRequests(ctx context.Context, user string) ([]model.Issue, error) {
+	queryParams := []string{
+		"is:pr",
+		"is:open",
+		fmt.Sprintf("review-requested:%s", user),
+		"archived:false",
+	}
+	q := strings.Join(queryParams, " ")
+
+	opt := github.SearchOptions{
+		Sort:  "updated",
+		Order: "desc",
+	}
+
+	return client.SearchIssues(ctx, q, &opt)
 }

@@ -8,6 +8,10 @@ type User struct {
 	HTMLURL string
 }
 
+func (u User) IsValid() bool {
+	return len(u.Login) > 0
+}
+
 // ConvertUser convert github.User to User
 func ConvertUser(user *github.User) User {
 	return User{
