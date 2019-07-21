@@ -26,6 +26,18 @@ func (cmd HelpCommand) Run(ctx context.Context, wf *aw.Workflow) {
 		desc string
 	}{
 		{
+			name: "created",
+			desc: "",
+		},
+		{
+			name: "assigned",
+			desc: "",
+		},
+		{
+			name: "mentioned",
+			desc: "",
+		},
+		{
 			name: "review-requests",
 			desc: "",
 		},
