@@ -32,6 +32,9 @@ func (cache *AuthenticatedUserCache) GetCache() (*model.User, error) {
 	if err != nil {
 		return nil, err
 	}
+	if !user.IsValid() {
+		return nil, err
+	}
 
 	return &user, nil
 }

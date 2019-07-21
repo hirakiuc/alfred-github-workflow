@@ -23,6 +23,8 @@ type Issue struct {
 	Reporter  string
 	CreatedAt time.Time
 	ClosedAt  time.Time
+
+	IsPullRequest bool
 }
 
 func formatTime(t time.Time) string {
@@ -65,5 +67,7 @@ func ConvertIssue(issue *github.Issue) Issue {
 		Reporter:  issue.GetUser().GetName(),
 		CreatedAt: issue.GetCreatedAt(),
 		ClosedAt:  issue.GetClosedAt(),
+
+		IsPullRequest: (issue.GetPullRequestLinks() != nil),
 	}
 }
