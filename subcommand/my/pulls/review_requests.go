@@ -26,7 +26,7 @@ func NewReviewRequestsCommand(args []string) ReviewRequestsCommand {
 
 func fetchReviewRequests(
 	ctx context.Context, wf *aw.Workflow, client *api.Client, user string) ([]model.Issue, error) {
-	store := cache.NewReviewRequestsCache(wf)
+	store := cache.NewPullsReviewRequestsCache(wf)
 
 	issues, err := store.GetCache(user)
 	if err != nil {

@@ -7,23 +7,23 @@ import (
 	"github.com/hirakiuc/alfred-github-workflow/model"
 )
 
-type ReviewRequestsCache struct {
+type PullsReviewRequestsCache struct {
 	*BaseCache
 }
 
-func NewReviewRequestsCache(wf *aw.Workflow) *ReviewRequestsCache {
-	return &ReviewRequestsCache{
+func NewPullsReviewRequestsCache(wf *aw.Workflow) *PullsReviewRequestsCache {
+	return &PullsReviewRequestsCache{
 		&BaseCache{
 			wf: wf,
 		},
 	}
 }
 
-func (cache *ReviewRequestsCache) getCacheKey(user string) string {
+func (cache *PullsReviewRequestsCache) getCacheKey(user string) string {
 	return fmt.Sprintf("review-requests-%s", user)
 }
 
-func (cache *ReviewRequestsCache) GetCache(user string) ([]model.Issue, error) {
+func (cache *PullsReviewRequestsCache) GetCache(user string) ([]model.Issue, error) {
 	cacheKey := cache.getCacheKey(user)
 
 	issues := []model.Issue{}
@@ -38,7 +38,7 @@ func (cache *ReviewRequestsCache) GetCache(user string) ([]model.Issue, error) {
 	return issues, nil
 }
 
-func (cache *ReviewRequestsCache) Store(user string, issues []model.Issue) ([]model.Issue, error) {
+func (cache *PullsReviewRequestsCache) Store(user string, issues []model.Issue) ([]model.Issue, error) {
 	cacheKey := cache.getCacheKey(user)
 
 	_, err := cache.storeRawData(cacheKey, issues)
