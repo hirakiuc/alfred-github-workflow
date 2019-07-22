@@ -1,4 +1,4 @@
-package pulls
+package issues
 
 import (
 	"context"
@@ -12,20 +12,21 @@ import (
 	"github.com/hirakiuc/alfred-github-workflow/subcommand"
 )
 
-type CreatedCommand struct {
+type MentionedCommand struct {
 	Query string
 	Limit int
 }
 
-func NewCreatedCommand(args []string) CreatedCommand {
-	return CreatedCommand{
+func NewMentionedCommand(args []string) MentionedCommand {
+	return MentionedCommand{
 		Query: strings.Join(args, " "),
-		Limit: 100,
+		Limit: 50,
 	}
 }
 
-func fetchPullsCreated(ctx context.Context, wf *aw.Workflow, client *api.Client, user string) ([]model.Issue, error) {
-	store := cache.NewPullsCreatedCache(wf)
+func fetchIssuesMentioned(
+	ctx context.Context, wf *aw.Workflow, client *api.Client, user string) ([]model.Issue, error) {
+	store := cache.NewIssuesMentionedCache(wf)
 
 	issues, err := store.GetCache(user)
 	if err != nil {
@@ -35,7 +36,7 @@ func fetchPullsCreated(ctx context.Context, wf *aw.Workflow, client *api.Client,
 		return issues, nil
 	}
 
-	issues, err = client.FetchPullsCreated(ctx, user)
+	issues, err = client.FetchIssuesMentioned(ctx, user)
 	if err != nil {
 		return []model.Issue{}, err
 	}
@@ -46,7 +47,7 @@ func fetchPullsCreated(ctx context.Context, wf *aw.Workflow, client *api.Client,
 	return store.Store(user, issues)
 }
 
-func (cmd CreatedCommand) Run(ctx context.Context, wf *aw.Workflow) {
+func (cmd MentionedCommand) Run(ctx context.Context, wf *aw.Workflow) {
 	client, err := api.NewClient(ctx, wf)
 	if err != nil {
 		wf.FatalError(err)
@@ -59,13 +60,13 @@ func (cmd CreatedCommand) Run(ctx context.Context, wf *aw.Workflow) {
 		return
 	}
 
-	issues, err := fetchPullsCreated(ctx, wf, client, user.Login)
+	issues, err := fetchIssuesMentioned(ctx, wf, client, user.Login)
 	if err != nil {
 		wf.FatalError(err)
 		return
 	}
 
-	icon, _ := icon.GetIcon(icon.TypePull)
+	icon, _ := icon.GetIcon(icon.TypeIssue)
 
 	// Add Items
 	for _, issue := range issues {
@@ -81,5 +82,5 @@ func (cmd CreatedCommand) Run(ctx context.Context, wf *aw.Workflow) {
 	}
 
 	// Show a warning in Alfred if there are no items
-	wf.WarnEmpty("No pulls found.", "")
+	wf.WarnEmpty("No issues found.", "")
 }

@@ -1,4 +1,4 @@
-package pulls
+package subcommand
 
 import (
 	"context"
@@ -9,7 +9,8 @@ import (
 	"github.com/hirakiuc/alfred-github-workflow/model"
 )
 
-func fetchUser(ctx context.Context, wf *aw.Workflow, client *api.Client) (*model.User, error) {
+// FetchAuthorizedUser fetches the owner of this api token.
+func FetchAuthorizedUser(ctx context.Context, wf *aw.Workflow, client *api.Client) (*model.User, error) {
 	store := cache.NewAuthenticatedUserCache(wf)
 
 	user, err := store.GetCache()

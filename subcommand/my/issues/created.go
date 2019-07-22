@@ -1,4 +1,4 @@
-package pulls
+package issues
 
 import (
 	"context"
@@ -20,12 +20,12 @@ type CreatedCommand struct {
 func NewCreatedCommand(args []string) CreatedCommand {
 	return CreatedCommand{
 		Query: strings.Join(args, " "),
-		Limit: 100,
+		Limit: 50,
 	}
 }
 
-func fetchPullsCreated(ctx context.Context, wf *aw.Workflow, client *api.Client, user string) ([]model.Issue, error) {
-	store := cache.NewPullsCreatedCache(wf)
+func fetchIssuesCreated(ctx context.Context, wf *aw.Workflow, client *api.Client, user string) ([]model.Issue, error) {
+	store := cache.NewIssuesCreatedCache(wf)
 
 	issues, err := store.GetCache(user)
 	if err != nil {
@@ -35,7 +35,7 @@ func fetchPullsCreated(ctx context.Context, wf *aw.Workflow, client *api.Client,
 		return issues, nil
 	}
 
-	issues, err = client.FetchPullsCreated(ctx, user)
+	issues, err = client.FetchIssuesCreated(ctx, user)
 	if err != nil {
 		return []model.Issue{}, err
 	}
@@ -59,13 +59,13 @@ func (cmd CreatedCommand) Run(ctx context.Context, wf *aw.Workflow) {
 		return
 	}
 
-	issues, err := fetchPullsCreated(ctx, wf, client, user.Login)
+	issues, err := fetchIssuesCreated(ctx, wf, client, user.Login)
 	if err != nil {
 		wf.FatalError(err)
 		return
 	}
 
-	icon, _ := icon.GetIcon(icon.TypePull)
+	icon, _ := icon.GetIcon(icon.TypeIssue)
 
 	// Add Items
 	for _, issue := range issues {
@@ -81,5 +81,5 @@ func (cmd CreatedCommand) Run(ctx context.Context, wf *aw.Workflow) {
 	}
 
 	// Show a warning in Alfred if there are no items
-	wf.WarnEmpty("No pulls found.", "")
+	wf.WarnEmpty("No issues found.", "")
 }
