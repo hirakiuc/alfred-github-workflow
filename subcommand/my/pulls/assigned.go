@@ -9,6 +9,7 @@ import (
 	"github.com/hirakiuc/alfred-github-workflow/cache"
 	"github.com/hirakiuc/alfred-github-workflow/icon"
 	"github.com/hirakiuc/alfred-github-workflow/model"
+	"github.com/hirakiuc/alfred-github-workflow/subcommand"
 )
 
 type AssignedCommand struct {
@@ -52,7 +53,7 @@ func (cmd AssignedCommand) Run(ctx context.Context, wf *aw.Workflow) {
 		return
 	}
 
-	user, err := fetchUser(ctx, wf, client)
+	user, err := subcommand.FetchAuthorizedUser(ctx, wf, client)
 	if err != nil {
 		wf.FatalError(err)
 		return
