@@ -49,6 +49,14 @@ Alfred workflow to view the github resources.
 | x | gh my pulls mentioned | ... |
 | x | gh my pulls review-requests | ... |
 
+### Issues
+
+| status | command | description |
+|:-------|:--------|:------------|
+| x | gh my issues created | ... |
+| x | gh my issues assigned | ... |
+| x | gh my issues mentioned | ... |
+
 ## Configs
 
 | status | command | description |
