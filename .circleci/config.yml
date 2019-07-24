@@ -55,7 +55,9 @@ jobs:
       - restore_cache:
           key: mod-{{ .Environment.COMMON_CACHE_KEY }}-{{ checksum "go.mod" }}
       - run:
-          command: make test
+          command: |
+            go test -race -coverprofile=cover.out -covermode=atomic ./...
+            bash <(curl -s https://codecov.io/bash)
 
 workflows:
   version: 2

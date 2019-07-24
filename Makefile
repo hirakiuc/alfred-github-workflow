@@ -1,11 +1,17 @@
 .DEFAULT_GOAL := default
 ALFRED_WORKFLOW_DIR := ${HOME}/Library/Application\ Support/Alfred\ 3/Alfred.alfredpreferences/workflows
 DIR_NAME := `basename ${PWD}`
+COVERAGE_FILE := cover.out
+COVERAGE_HTML := cover.html
 
 NAME := gh
 
 test:
-	go test ./...
+	go test -cover ./...
+
+show-coverage:
+	go test -coverprofile=$(COVERAGE_FILE) ./...
+	go tool cover -html=$(COVERAGE_FILE) -o $(COVERAGE_HTML)
 
 dev-deps:
 	go get -u golang.org/x/lint/golint
@@ -24,7 +30,7 @@ check:
 
 clean:
 	go clean
-	rm -f $(NAME)
+	rm -f $(NAME) $(COVERAGE_FILE) $(COVERAGE_HTML)
 
 default:
 	make check
