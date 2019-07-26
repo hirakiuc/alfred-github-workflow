@@ -2,7 +2,6 @@ package issues
 
 import (
 	"context"
-	"strings"
 
 	aw "github.com/deanishe/awgo"
 	"github.com/hirakiuc/alfred-github-workflow/api"
@@ -13,14 +12,18 @@ import (
 )
 
 type MentionedCommand struct {
-	Query string
 	Limit int
+
+	subcommand.BaseCommand
 }
 
 func NewMentionedCommand(args []string) MentionedCommand {
 	return MentionedCommand{
-		Query: strings.Join(args, " "),
 		Limit: 50,
+
+		BaseCommand: subcommand.BaseCommand{
+			Args: args,
+		},
 	}
 }
 
@@ -77,8 +80,8 @@ func (cmd MentionedCommand) Run(ctx context.Context, wf *aw.Workflow) {
 			Valid(true)
 	}
 
-	if len(cmd.Query) > 0 {
-		wf.Filter(cmd.Query)
+	if cmd.HasQuery() {
+		wf.Filter(cmd.Query())
 	}
 
 	// Show a warning in Alfred if there are no items

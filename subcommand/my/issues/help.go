@@ -2,20 +2,24 @@ package issues
 
 import (
 	"context"
-	"strings"
 
 	aw "github.com/deanishe/awgo"
+	"github.com/hirakiuc/alfred-github-workflow/subcommand"
 )
 
 type HelpCommand struct {
-	Query string
 	Limit int
+
+	subcommand.BaseCommand
 }
 
 func NewHelpCommand(args []string) HelpCommand {
 	return HelpCommand{
-		Query: strings.Join(args, " "),
 		Limit: 50,
+
+		BaseCommand: subcommand.BaseCommand{
+			Args: args,
+		},
 	}
 }
 
@@ -43,5 +47,9 @@ func (cmd HelpCommand) Run(ctx context.Context, wf *aw.Workflow) {
 			Subtitle(cmd.desc).
 			Autocomplete("my issues " + cmd.name).
 			Valid(true)
+	}
+
+	if cmd.HasQuery() {
+		wf.Filter(cmd.Query())
 	}
 }

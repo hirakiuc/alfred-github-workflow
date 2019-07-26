@@ -6,17 +6,24 @@ import (
 
 	aw "github.com/deanishe/awgo"
 	"github.com/hirakiuc/alfred-github-workflow/secret"
+	"github.com/hirakiuc/alfred-github-workflow/subcommand"
 )
 
 // TokenCommand describe a subcommand to configure the api token.
 type TokenCommand struct {
 	Token string
+
+	subcommand.BaseCommand
 }
 
 // NewTokenCommand return an instance of TokenCommand.
 func NewTokenCommand(token string) TokenCommand {
 	return TokenCommand{
 		Token: token,
+
+		BaseCommand: subcommand.BaseCommand{
+			Args: []string{},
+		},
 	}
 }
 

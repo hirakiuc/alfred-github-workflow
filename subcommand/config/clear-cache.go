@@ -4,13 +4,19 @@ import (
 	"context"
 
 	aw "github.com/deanishe/awgo"
+	"github.com/hirakiuc/alfred-github-workflow/subcommand"
 )
 
 type ClearCacheCommand struct {
+	subcommand.BaseCommand
 }
 
 func NewClearCacheCommand() ClearCacheCommand {
-	return ClearCacheCommand{}
+	return ClearCacheCommand{
+		subcommand.BaseCommand{
+			Args: []string{},
+		},
+	}
 }
 
 func (cmd ClearCacheCommand) Run(ctx context.Context, wf *aw.Workflow) {

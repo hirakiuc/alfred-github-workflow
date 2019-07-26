@@ -8,11 +8,16 @@ import (
 
 // HelpCommand describe a subcommand to show the subcommands.
 type HelpCommand struct {
+	BaseCommand
 }
 
 // NewHelpCommand return an instance of this subcommand.
 func NewHelpCommand() HelpCommand {
-	return HelpCommand{}
+	return HelpCommand{
+		BaseCommand{
+			Args: []string{},
+		},
+	}
 }
 
 // Run start this subcommand.
@@ -44,5 +49,9 @@ func (cmd HelpCommand) Run(_ctx context.Context, wf *aw.Workflow) {
 			Subtitle(cmd.desc).
 			Autocomplete(cmd.name).
 			Valid(false)
+	}
+
+	if cmd.HasQuery() {
+		wf.Filter(cmd.Query())
 	}
 }

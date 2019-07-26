@@ -2,13 +2,13 @@ package repo
 
 import (
 	"context"
-	"strings"
 
 	aw "github.com/deanishe/awgo"
 	"github.com/hirakiuc/alfred-github-workflow/api"
 	"github.com/hirakiuc/alfred-github-workflow/cache"
 	"github.com/hirakiuc/alfred-github-workflow/icon"
 	"github.com/hirakiuc/alfred-github-workflow/model"
+	"github.com/hirakiuc/alfred-github-workflow/subcommand"
 )
 
 // IssueCommand describe a subcommand to fetch issues
@@ -16,8 +16,9 @@ type IssueCommand struct {
 	Owner string
 	Repo  string
 
-	Query string
 	Limit int
+
+	subcommand.BaseCommand
 }
 
 // NewIssueCommand return a IssueCommand instance
@@ -25,8 +26,11 @@ func NewIssueCommand(owner string, repo string, args []string) IssueCommand {
 	return IssueCommand{
 		Owner: owner,
 		Repo:  repo,
-		Query: strings.Join(args, " "),
 		Limit: 100,
+
+		BaseCommand: subcommand.BaseCommand{
+			Args: args,
+		},
 	}
 }
 
@@ -77,8 +81,8 @@ func (cmd IssueCommand) Run(ctx context.Context, wf *aw.Workflow) {
 		}
 	}
 
-	if len(cmd.Query) > 0 {
-		wf.Filter(cmd.Query)
+	if cmd.HasQuery() {
+		wf.Filter(cmd.Query())
 	}
 
 	// Show a warning in Alfred if there are no items
