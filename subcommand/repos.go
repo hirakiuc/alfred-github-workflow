@@ -2,7 +2,6 @@ package subcommand
 
 import (
 	"context"
-	"strings"
 
 	aw "github.com/deanishe/awgo"
 	"github.com/hirakiuc/alfred-github-workflow/api"
@@ -14,17 +13,20 @@ import (
 // ReposCommand describe a subcommand to fetch repos
 type ReposCommand struct {
 	Owner string
-
-	Query string
 	Limit int
+
+	BaseCommand
 }
 
 // NewReposCommand return a ReposCommand instance.
 func NewReposCommand(owner string, args []string) ReposCommand {
 	return ReposCommand{
 		Owner: owner,
-		Query: strings.Join(args, " "),
 		Limit: 50,
+
+		BaseCommand: BaseCommand{
+			Args: args,
+		},
 	}
 }
 
@@ -85,8 +87,8 @@ func (cmd ReposCommand) Run(ctx context.Context, wf *aw.Workflow) {
 		}
 	}
 
-	if len(cmd.Query) > 0 {
-		wf.Filter(cmd.Query)
+	if cmd.HasQuery() {
+		wf.Filter(cmd.Query())
 	}
 
 	// Show a warning in Alfred if there are no repos

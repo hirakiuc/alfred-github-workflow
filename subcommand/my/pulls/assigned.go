@@ -2,7 +2,6 @@ package pulls
 
 import (
 	"context"
-	"strings"
 
 	aw "github.com/deanishe/awgo"
 	"github.com/hirakiuc/alfred-github-workflow/api"
@@ -13,14 +12,18 @@ import (
 )
 
 type AssignedCommand struct {
-	Query string
 	Limit int
+
+	subcommand.BaseCommand
 }
 
 func NewAssignedCommand(args []string) AssignedCommand {
 	return AssignedCommand{
-		Query: strings.Join(args, " "),
 		Limit: 100,
+
+		BaseCommand: subcommand.BaseCommand{
+			Args: args,
+		},
 	}
 }
 
@@ -76,8 +79,8 @@ func (cmd AssignedCommand) Run(ctx context.Context, wf *aw.Workflow) {
 			Valid(true)
 	}
 
-	if len(cmd.Query) > 0 {
-		wf.Filter(cmd.Query)
+	if cmd.HasQuery() {
+		wf.Filter(cmd.Query())
 	}
 
 	// Show a warning in Alfred if there are no items.

@@ -10,6 +10,7 @@ import (
 	"github.com/hirakiuc/alfred-github-workflow/api"
 	"github.com/hirakiuc/alfred-github-workflow/cache"
 	"github.com/hirakiuc/alfred-github-workflow/model"
+	"github.com/hirakiuc/alfred-github-workflow/subcommand"
 )
 
 // HelpCommand describe a subcommand to show the repo subcommand.
@@ -17,8 +18,9 @@ type HelpCommand struct {
 	Owner string
 	Repo  string
 
-	Query string
 	Limit int
+
+	subcommand.BaseCommand
 }
 
 // NewHelpCommand return an instance of this subcommand.
@@ -26,8 +28,11 @@ func NewHelpCommand(owner string, repo string, args []string) HelpCommand {
 	return HelpCommand{
 		Owner: owner,
 		Repo:  repo,
-		Query: strings.Join(args, " "),
 		Limit: 50,
+
+		BaseCommand: subcommand.BaseCommand{
+			Args: args,
+		},
 	}
 }
 
@@ -120,8 +125,8 @@ func (cmd HelpCommand) appendSubCommand(wf *aw.Workflow) {
 			Valid(true)
 	}
 
-	if len(cmd.Query) > 0 {
-		wf.Filter(cmd.Query)
+	if cmd.HasQuery() {
+		wf.Filter(cmd.Query())
 	}
 }
 
@@ -162,8 +167,8 @@ func (cmd HelpCommand) Run(ctx context.Context, wf *aw.Workflow) {
 					Valid(true)
 			}
 
-			if len(cmd.Query) > 0 {
-				wf.Filter(cmd.Query)
+			if cmd.HasQuery() {
+				wf.Filter(cmd.Query())
 			}
 		} else {
 			repo, err := cmd.fetchRepo(ctx, wf)

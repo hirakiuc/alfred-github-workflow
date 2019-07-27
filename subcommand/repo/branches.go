@@ -2,21 +2,22 @@ package repo
 
 import (
 	"context"
-	"strings"
 
 	aw "github.com/deanishe/awgo"
 	"github.com/hirakiuc/alfred-github-workflow/api"
 	"github.com/hirakiuc/alfred-github-workflow/cache"
 	"github.com/hirakiuc/alfred-github-workflow/icon"
 	"github.com/hirakiuc/alfred-github-workflow/model"
+	"github.com/hirakiuc/alfred-github-workflow/subcommand"
 )
 
 // BranchesCommand describe a subcommand to fetch branches.
 type BranchesCommand struct {
 	Owner string
 	Repo  string
-	Query string
 	Limit int
+
+	subcommand.BaseCommand
 }
 
 // NewBranchesCommand return an instance of BranchesCommand
@@ -24,9 +25,11 @@ func NewBranchesCommand(owner string, repo string, args []string) BranchesComman
 	return BranchesCommand{
 		Owner: owner,
 		Repo:  repo,
-
-		Query: strings.Join(args, " "),
 		Limit: 100,
+
+		BaseCommand: subcommand.BaseCommand{
+			Args: args,
+		},
 	}
 }
 
@@ -76,8 +79,8 @@ func (cmd BranchesCommand) Run(ctx context.Context, wf *aw.Workflow) {
 		}
 	}
 
-	if len(cmd.Query) > 0 {
-		wf.Filter(cmd.Query)
+	if cmd.HasQuery() {
+		wf.Filter(cmd.Query())
 	}
 
 	// Show a warning in Alfred if there are no items
