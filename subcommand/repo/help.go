@@ -93,27 +93,57 @@ func findReposContains(repos []model.Repo, key string) []model.Repo {
 	return ret
 }
 
-func (cmd HelpCommand) appendSubCommand(wf *aw.Workflow) {
+func (cmd HelpCommand) appendSubCommand(wf *aw.Workflow, repo model.Repo) {
 	// Show subcommands if the repo found.
 	subcommands := []struct {
 		name string
 		desc string
+		url  string
 	}{
 		{
 			name: "branches",
 			desc: "Show branches",
+			url:  repo.BranchURL(),
 		},
 		{
 			name: "issues",
 			desc: "Show issues",
+			url:  repo.IssuesURL(),
 		},
 		{
 			name: "milestones",
 			desc: "Show milestones",
+			url:  repo.MilestoneURL(),
 		},
 		{
 			name: "pulls",
 			desc: "Show pull requests",
+			url:  repo.PullsURL(),
+		},
+		{
+			name: "wiki",
+			desc: "Show wiki page",
+			url:  repo.WikiURL(),
+		},
+		{
+			name: "security",
+			desc: "Show security page",
+			url:  repo.SecurityURL(),
+		},
+		{
+			name: "Insights",
+			desc: "Show Insights page",
+			url:  repo.InsightsURL(),
+		},
+		{
+			name: "settings",
+			desc: "Show settings page",
+			url:  repo.SettingsURL(),
+		},
+		{
+			name: "cloneURL",
+			desc: "Show clone URL",
+			url:  repo.CloneURL(),
 		},
 	}
 
@@ -121,7 +151,7 @@ func (cmd HelpCommand) appendSubCommand(wf *aw.Workflow) {
 		wf.NewItem(sub.name).
 			Subtitle(sub.desc).
 			Autocomplete(cmd.command(sub.name)).
-			Arg(cmd.htmlURL(sub.name)).
+			Arg(sub.url).
 			Valid(true)
 	}
 
@@ -147,7 +177,7 @@ func (cmd HelpCommand) Run(ctx context.Context, wf *aw.Workflow) {
 		repo := founds[0]
 		if strings.ToUpper(repo.Name) == strings.ToUpper(cmd.Repo) {
 			// show subcommand if found exactly one repo.
-			cmd.appendSubCommand(wf)
+			cmd.appendSubCommand(wf, repo)
 		} else {
 			// show the repo if found but not exactly same name.
 			wf.NewItem(repo.Name).
@@ -163,7 +193,7 @@ func (cmd HelpCommand) Run(ctx context.Context, wf *aw.Workflow) {
 				wf.NewItem(repo.Name).
 					Subtitle(repo.Description).
 					Autocomplete(cmd.Owner + "/" + repo.Name + " ").
-					Arg(repo.HTMLURL).
+					Arg(cmd.htmlURL(repo.Name)).
 					Valid(true)
 			}
 
@@ -180,7 +210,7 @@ func (cmd HelpCommand) Run(ctx context.Context, wf *aw.Workflow) {
 
 			if repo != nil {
 				// show subcommands
-				cmd.appendSubCommand(wf)
+				cmd.appendSubCommand(wf, *repo)
 			}
 		}
 	}

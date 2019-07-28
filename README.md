@@ -32,12 +32,11 @@ Alfred workflow to view the github resources.
 
 | status | command | description |
 |:-------|:--------|:------------|
-| - | gh user/repo admin | Show the admin page |
-| - | gh user/repo clone | Show the clone page |
-| - | gh user/repo graphs | Show the graphs page |
-| - | gh user/repo network | Show the network page |
-| - | gh user/repo pulse | Show the pulse page |
-| - | gh user/repo wiki | Show the wiki page |
+| x | gh user/repo wiki | Show the wiki page |
+| x | gh user/repo security | Show the security page |
+| x | gh user/repo insights | Show the insights page |
+| x | gh user/repo settings | Show the settings page |
+| x | gh user/repo clone | Show the clone page |
 
 ## My
 

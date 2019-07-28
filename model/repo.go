@@ -28,3 +28,43 @@ func ConvertRepo(repo *github.Repository) Repo {
 		HTMLURL:     repo.GetHTMLURL(),
 	}
 }
+
+func (repo Repo) BranchURL() string {
+	return repo.HTMLURL + "/branches"
+}
+
+func (repo Repo) IssuesURL() string {
+	return repo.HTMLURL + "/issues"
+}
+
+func (repo Repo) MilestoneURL() string {
+	return repo.HTMLURL + "/milestones"
+}
+
+func (repo Repo) PullsURL() string {
+	return repo.HTMLURL + "/pulls"
+}
+
+func (repo Repo) ProjectsURL() string {
+	return repo.HTMLURL + "/projects"
+}
+
+func (repo Repo) WikiURL() string {
+	return repo.HTMLURL + "/wiki"
+}
+
+func (repo Repo) SecurityURL() string {
+	return repo.HTMLURL + "/network/alerts"
+}
+
+func (repo Repo) InsightsURL() string {
+	return repo.HTMLURL + "/pulse"
+}
+
+func (repo Repo) SettingsURL() string {
+	return repo.HTMLURL + "/settings"
+}
+
+func (repo Repo) CloneURL() string {
+	return repo.HTMLURL + ".git"
+}
