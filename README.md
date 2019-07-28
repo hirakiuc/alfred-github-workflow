@@ -27,8 +27,8 @@ Alfred workflow to view the github resources.
 
 | status | command | description |
 |:-------|:--------|:------------|
-| - | gh user/repo new issue | Create new issue |
-| - | gh user/repo new pull | Create new pull request |
+| x | gh user/repo new issue | Create new issue |
+| x | gh user/repo new pull | Create new pull request |
 
 | status | command | description |
 |:-------|:--------|:------------|
