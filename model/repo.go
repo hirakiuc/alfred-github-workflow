@@ -45,6 +45,10 @@ func (repo Repo) PullsURL() string {
 	return repo.HTMLURL + "/pulls"
 }
 
+func (repo Repo) ReleasesURL() string {
+	return repo.HTMLURL + "/releases"
+}
+
 func (repo Repo) ProjectsURL() string {
 	return repo.HTMLURL + "/projects"
 }

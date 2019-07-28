@@ -19,6 +19,7 @@ const (
 	TypeProject   Type = "project.png"
 	TypePull      Type = "git-pull-request.png"
 	TypeRepo      Type = "repo.png"
+	TypeRelease   Type = "release.png"
 )
 
 func (t Type) ToString() string {
