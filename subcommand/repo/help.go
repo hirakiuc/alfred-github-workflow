@@ -116,6 +116,11 @@ func (cmd HelpCommand) appendSubCommand(wf *aw.Workflow, repo model.Repo) {
 			url:  repo.MilestoneURL(),
 		},
 		{
+			name: "releases",
+			desc: "show releases",
+			url:  repo.ReleasesURL(),
+		},
+		{
 			name: "pulls",
 			desc: "Show pull requests",
 			url:  repo.PullsURL(),

@@ -35,6 +35,8 @@ func (p RepoCommandParser) Parse() subcommand.SubCommand {
 		return repo.NewPullsCommand(p.Owner, p.Repo, opts)
 	case "new":
 		return repo.NewNewCommand(p.Owner, p.Repo, opts)
+	case "releases":
+		return repo.NewReleasesCommand(p.Owner, p.Repo, opts)
 	default:
 		return repo.NewHelpCommand(p.Owner, p.Repo, opts)
 	}

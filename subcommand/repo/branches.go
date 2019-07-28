@@ -72,6 +72,7 @@ func (cmd BranchesCommand) Run(ctx context.Context, wf *aw.Workflow) {
 	for _, branch := range branches {
 		item := wf.NewItem(branch.Name).
 			Arg(branch.HTMLURL).
+			Icon(icon).
 			Valid(true)
 
 		if icon != nil {
