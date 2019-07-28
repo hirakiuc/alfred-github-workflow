@@ -81,6 +81,11 @@ func TestParseRepoCommand(t *testing.T) {
 			cmd:  "PullsCommand",
 			pkg:  "subcommand/repo",
 		},
+		{
+			args: []string{"owner/repo new"},
+			cmd:  "NewCommand",
+			pkg:  "subcommand/repo",
+		},
 	}
 
 	for _, example := range examples {
