@@ -20,7 +20,7 @@ deps:
 	go mod download
 
 build:
-	go build -o $(NAME)
+	go build -o $(NAME) ./cmd/gh/main.go
 
 install:
 	go install
@@ -29,7 +29,7 @@ check:
 	golangci-lint run --enable-all -D dupl ./...
 
 clean:
-	go clean
+	go clean ./cmd/gh/main.go
 	rm -f $(NAME) $(COVERAGE_FILE) $(COVERAGE_HTML)
 
 default:
