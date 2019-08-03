@@ -42,7 +42,8 @@ func (p MyCommandParser) Parse() subcommand.SubCommand {
 	case cmdTypeMyIssues:
 		return p.parseIssuesCommand()
 	default:
-		return my.NewHelpCommand(opts)
+		options := append([]string{token}, opts...)
+		return my.NewHelpCommand(options)
 	}
 }
 
@@ -61,7 +62,8 @@ func (p *MyCommandParser) parsePullsCommand() subcommand.SubCommand {
 	case cmdTypeMyPullsReviewRequests:
 		return pulls.NewReviewRequestsCommand(opts)
 	default:
-		return pulls.NewHelpCommand(opts)
+		options := append([]string{token}, opts...)
+		return pulls.NewHelpCommand(options)
 	}
 }
 
@@ -78,6 +80,7 @@ func (p *MyCommandParser) parseIssuesCommand() subcommand.SubCommand {
 	case cmdTypeMyIssuesMentioned:
 		return issues.NewMentionedCommand(opts)
 	default:
-		return issues.NewHelpCommand(opts)
+		options := append([]string{token}, opts...)
+		return issues.NewHelpCommand(options)
 	}
 }
