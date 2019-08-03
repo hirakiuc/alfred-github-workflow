@@ -39,6 +39,8 @@
 				<false/>
 				<key>alfredfiltersresultsmatchmode</key>
 				<integer>0</integer>
+				<key>argumenttreatemptyqueryasnil</key>
+				<false/>
 				<key>argumenttrimmode</key>
 				<integer>0</integer>
 				<key>argumenttype</key>
@@ -46,7 +48,7 @@
 				<key>escaping</key>
 				<integer>127</integer>
 				<key>keyword</key>
-				<string>github</string>
+				<string>gh</string>
 				<key>queuedelaycustom</key>
 				<integer>5</integer>
 				<key>queuedelayimmediatelyinitially</key>
@@ -84,7 +86,7 @@
 			<key>uid</key>
 			<string>50B0CD10-4D52-4898-9C05-DD3A34A829C3</string>
 			<key>version</key>
-			<integer>2</integer>
+			<integer>3</integer>
 		</dict>
 		<dict>
 			<key>config</key>

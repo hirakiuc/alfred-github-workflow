@@ -38,6 +38,7 @@ func (p RepoCommandParser) Parse() subcommand.SubCommand {
 	case "releases":
 		return repo.NewReleasesCommand(p.Owner, p.Repo, opts)
 	default:
-		return repo.NewHelpCommand(p.Owner, p.Repo, opts)
+		options := append([]string{token}, opts...)
+		return repo.NewHelpCommand(p.Owner, p.Repo, options)
 	}
 }

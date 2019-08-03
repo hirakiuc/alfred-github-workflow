@@ -33,6 +33,10 @@ func (cmd HelpCommand) Run(ctx context.Context, wf *aw.Workflow) {
 			name: "pulls",
 			desc: "",
 		},
+		{
+			name: "issues",
+			desc: "",
+		},
 	}
 
 	for _, cmd := range subcommands {
@@ -45,4 +49,7 @@ func (cmd HelpCommand) Run(ctx context.Context, wf *aw.Workflow) {
 	if cmd.HasQuery() {
 		wf.Filter(cmd.Query())
 	}
+
+	// Show a warning in Alfred if there are no commands.
+	wf.WarnEmpty("No commands found.", "")
 }

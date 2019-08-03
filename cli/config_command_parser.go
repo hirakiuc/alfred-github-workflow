@@ -35,6 +35,7 @@ func (p ConfigCommandParser) Parse() subcommand.SubCommand {
 	case cmdTypeConfigClearCache:
 		return config.NewClearCacheCommand()
 	default:
-		return config.NewHelpCommand()
+		options := append([]string{token}, opts...)
+		return config.NewHelpCommand(options)
 	}
 }

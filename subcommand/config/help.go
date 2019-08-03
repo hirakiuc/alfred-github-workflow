@@ -13,10 +13,10 @@ type HelpCommand struct {
 }
 
 // NewHelpCommand return an instance of this subcommand.
-func NewHelpCommand() HelpCommand {
+func NewHelpCommand(args []string) HelpCommand {
 	return HelpCommand{
 		subcommand.BaseCommand{
-			Args: []string{},
+			Args: args,
 		},
 	}
 }
