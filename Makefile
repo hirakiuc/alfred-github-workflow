@@ -1,5 +1,5 @@
 .DEFAULT_GOAL := default
-ALFRED_WORKFLOW_DIR := ${HOME}/Library/Application\ Support/Alfred\ 3/Alfred.alfredpreferences/workflows
+ALFRED_WORKFLOW_DIR := ${HOME}/Library/Application\ Support/Alfred/Alfred.alfredpreferences/workflows
 DIR_NAME := `basename ${PWD}`
 COVERAGE_FILE := cover.out
 COVERAGE_HTML := cover.html
@@ -37,7 +37,7 @@ default:
 	make build
 
 link:
-	ln -sv $(pwd) ${ALFRED_WORKFLOW_DIR}/
+	ln -sv `pwd` ${ALFRED_WORKFLOW_DIR}/
 
 unlink:
 	rm -i ${ALFRED_WORKFLOW_DIR}/${DIR_NAME}
