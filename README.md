@@ -1,5 +1,5 @@
 [![CircleCI](https://circleci.com/gh/hirakiuc/alfred-github-workflow/tree/master.svg?style=svg&circle-token=fa58af4989cde7043d7b8ea72e53359355d7da9c)](https://circleci.com/gh/hirakiuc/alfred-github-workflow/tree/master)
-[![codecov](https://codecov.io/gh/hirakiuc/alfred-github-workflow/branch/master/graph/badge.svg)](https://codecov.io/gh/hirakiuc/alfred-github-workflow)
+[![Coverage Status](https://coveralls.io/repos/github/hirakiuc/alfred-github-workflow/badge.svg?branch=master)](https://coveralls.io/github/hirakiuc/alfred-github-workflow?branch=master)
 
 # alfred-github-workflow
 

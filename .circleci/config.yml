@@ -1,5 +1,8 @@
 version: 2.1
 
+orbs:
+  coveralls: coveralls/coveralls@1.0.6
+
 executors:
   go-executor:
     docker:
@@ -57,7 +60,8 @@ jobs:
       - run:
           command: |
             go test -race -coverprofile=cover.out -covermode=atomic ./...
-            bash <(curl -s https://codecov.io/bash)
+      - coveralls/upload:
+          path_to_lcov: "./cover.out"
 
 workflows:
   version: 2
